@@ -1,45 +1,38 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
+import Hero from "@/components/home/Hero";
+import VisaServices from "@/components/home/VisaServices";
+import FeaturedDestinations from "@/components/home/FeaturedDestinations";
+import WhyChooseUs from "@/components/home/WhyChooseUs";
+import Testimonials from "@/components/home/Testimonials";
+import LatestOffers from "@/components/home/LatestOffers";
+import BlogPreview from "@/components/home/BlogPreview";
+import WhatsAppCTA from "@/components/home/WhatsAppCTA";
+import InquiryForm from "@/components/home/InquiryForm";
 export default function Home() {
   return (
-    <main className="bg-[#071120] text-white min-h-screen">
+    <main className="bg-[#071120] text-white overflow-hidden">
 
       <Navbar />
 
-      <section className="max-w-7xl mx-auto px-6 py-32">
+      <Hero />
 
-        <div className="max-w-3xl">
+      <VisaServices />
 
-          <p className="text-[#D4AF37] mb-4">
-            Premium Travel & Visa Solutions
-          </p>
+      <FeaturedDestinations />
 
-          <h1 className="text-6xl font-bold leading-tight">
-            Explore The World With ESHAARE TOUR
-          </h1>
+      <WhyChooseUs />
 
-          <p className="text-gray-400 mt-6 text-lg">
-            Visa services, luxury holidays, flights, travel insurance,
-            and global travel support.
-          </p>
+      <Testimonials />
 
-          <div className="flex gap-4 mt-10">
+      <LatestOffers />
 
-            <button className="bg-[#D4AF37] text-black px-6 py-3 rounded-2xl font-semibold hover:bg-yellow-500 transition">
-              Apply Visa
-            </button>
+      <BlogPreview />
 
-            <button className="border border-white/20 px-6 py-3 rounded-2xl hover:border-[#D4AF37] transition">
-              Explore Packages
-            </button>
+      <WhatsAppCTA />
 
-          </div>
-
-        </div>
-
-      </section>
-
+      <InquiryForm />
       <Footer />
 
     </main>
