@@ -10,6 +10,8 @@ import LatestOffers from "@/components/home/LatestOffers";
 import BlogPreview from "@/components/home/BlogPreview";
 import WhatsAppCTA from "@/components/home/WhatsAppCTA";
 import InquiryForm from "@/components/home/InquiryForm";
+import BottomNavbar from "@/components/layout/BottomNavbar";
+
 export default function Home() {
   return (
     <main className="bg-[#071120] text-white overflow-hidden">
@@ -17,6 +19,8 @@ export default function Home() {
       <Navbar />
 
       <Hero />
+
+      <BottomNavbar />
 
       <VisaServices />
 

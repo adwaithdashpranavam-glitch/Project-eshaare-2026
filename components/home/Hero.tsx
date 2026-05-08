@@ -1,59 +1,170 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search } from "lucide-react";
+import "@fontsource/pinyon-script";
+import { CiLocationOn } from "react-icons/ci";
+
+const slides = [
+  {
+    id: 1,
+    video: "/videos/burj khalifa in dubai.mp4",
+    title: "BURJ KHALIFA",
+  },
+  {
+    id: 2,
+    video: "/videos/dubai united arab emirates.mp4",
+    title: "DUBAI",
+  },
+  {
+    id: 3,
+    video: "/videos/kawazu town japan.mp4",
+    title: "KAWAZU TOWN",
+  },
+  {
+    id: 4,
+    video: "/videos/komodo island indonesia.mp4",
+    title: "KOMODO ISLAND",
+  },
+  {
+    id: 5,
+    video: "/videos/lake bohinj in slovenia.mp4",
+    title: "LAKE BOHINJ",
+  },
+  {
+    id: 6,
+    video: "/videos/lauterbrunnen valley of switzerland.mp4",
+    title: "LAUTERBRUNNEN",
+  },
+  {
+    id: 7,
+    video: "/videos/Seoul South Korea.mp4",
+    title: "SEOUL",
+  },
+];
+
 
 export default function Hero() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 6000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    videoRefs.current.forEach((video, index) => {
+      if (video) {
+        if (index === currentSlide) {
+          video.currentTime = 0;
+          video.play().catch((err) => console.log(err));
+        } else {
+          video.pause();
+        }
+      }
+    });
+  }, [currentSlide]);
+
   return (
-    <section className="relative overflow-hidden min-h-screen flex items-center">
+    <section className="min-h-screen bg-[#f5f5f5] px-4 pt-20 pb-6 md:px-8">
+      <div className="mx-auto max-w-7xl">
 
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2070')",
-        }}
-      />
+        {/* HERO CARD */}
+        <div className="relative mt-6 h-[72vh] overflow-visible rounded-[40px] shadow-2xl">
 
-      <div className="absolute inset-0 bg-black/70" />
-
-      <div className="relative max-w-7xl mx-auto px-6 py-32 w-full">
-
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="max-w-3xl"
-        >
-
-          <p className="text-[#D4AF37] text-lg mb-6">
-            Premium Travel & Visa Solutions
-          </p>
-
-          <h1 className="text-5xl md:text-7xl font-bold leading-tight">
-            Explore The World With ESHAARE TOUR
-          </h1>
-
-          <p className="text-gray-300 text-lg mt-8 leading-8">
-            Luxury holidays, visa services, flights,
-            insurance, and worldwide travel support.
-          </p>
-
-          <div className="flex flex-wrap gap-4 mt-10">
-
-            <button className="bg-[#D4AF37] text-black px-7 py-4 rounded-2xl font-semibold hover:bg-yellow-500 transition hover:scale-105">
-              Apply Visa
-            </button>
-
-            <button className="border border-white/20 bg-white/5 backdrop-blur-md px-7 py-4 rounded-2xl hover:border-[#D4AF37] transition">
-              Explore Packages
-            </button>
-
+          {/* VIDEOS */}
+          <div className="absolute inset-0 overflow-hidden rounded-[40px]">
+            {slides.map((slide, index) => (
+              <video
+                key={slide.id}
+                ref={(el) => {
+                  videoRefs.current[index] = el;
+                }}
+                className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+                  index === currentSlide ? "opacity-100" : "opacity-0"
+                }`}
+                loop
+                muted
+                playsInline
+                autoPlay={index === 0}
+              >
+                <source src={slide.video} type="video/mp4" />
+              </video>
+            ))}
           </div>
 
-        </motion.div>
+          {/* OVERLAY */}
+          <div className="absolute inset-0 rounded-[40px] bg-black/35" />
 
+          {/* CONTENT */}
+          <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center">
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentSlide}
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                {/* TITLE */}
+                <h1 className="text-5xl font-extrabold tracking-tight text-white md:text-7xl lg:text-8xl">
+                  {slides[currentSlide].title}
+                </h1>
+
+                {/* SUBTITLE */}
+                <p
+                  className="mt-6 text-4xl text-white/95 md:text-5xl"
+                  style={{
+                    fontFamily: "'Pinyon Script', cursive",
+                  }}
+                >
+                  Explore the world with Eshaare Tour
+                </p>
+              </motion.div>
+            </AnimatePresence>
+
+            {/* BUTTON */}
+            <div className="mt-10">
+              <button className="rounded-full border border-white/30 bg-white/10 px-10 py-4 text-lg font-semibold text-white backdrop-blur-md transition hover:bg-white hover:text-black">
+                Discover Now
+              </button>
+            </div>
+
+            {/* SEARCH BAR */}
+<div className="absolute -bottom-12 left-1/2 z-30 w-full max-w-3xl -translate-x-1/2 px-6">
+  <div className="flex h-16 items-center overflow-hidden rounded-full bg-white shadow-[0_18px_45px_rgba(0,0,0,0.16)]">
+
+    <CiLocationOn
+      className="ml-6 text-3xl text-gray-400"
+    />
+
+    <input
+      type="text"
+      placeholder="Search Destinations or Events"
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      className="w-full bg-transparent px-4 text-base text-gray-700 outline-none"
+    />
+
+    <button className="mr-2 rounded-full bg-orange-500 p-4 text-white transition hover:bg-orange-600">
+      <Search size={22} />
+    </button>
+
+  </div>
+</div>
+
+          </div>
+        </div>
+
+     
       </div>
-
     </section>
   );
 }
