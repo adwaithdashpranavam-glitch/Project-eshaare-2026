@@ -28,7 +28,7 @@ const items = [
 
 export default function BottomNavbar() {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white shadow-[0_-10px_30px_rgba(0,0,0,0.08)] md:hidden">
+    <div className="fixed bottom-0 left-0 right-0 z-[9999] border-t border-gray-200 bg-white shadow-[0_-10px_30px_rgba(0,0,0,0.08)]">
       <div className="grid grid-cols-4 py-2">
         {items.map((item) => {
           const Icon = item.icon;
