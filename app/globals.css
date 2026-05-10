@@ -55,7 +55,58 @@
   --input: #1f2a44;
   --ring: #d4af37;
 }
+/* =========================
+   LUXURY GRADIENT SCROLLBAR
+========================= */
 
+.luxury-scrollbar::-webkit-scrollbar {
+  height: 10px;
+}
+
+.luxury-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 999px;
+  margin-inline: 20px;
+}
+
+.luxury-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    90deg,
+    #d4af37,
+    #f4d06f,
+    #d4af37
+  );
+
+  border-radius: 999px;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+}
+
+.luxury-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    90deg,
+    #f4d06f,
+    #d4af37,
+    #f4d06f
+  );
+}
+
+/* FIREFOX */
+.luxury-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #d4af37 rgba(255,255,255,0.05);
+}
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 30s linear infinite;
+}
 @layer base {
   * {
     border-color: var(--color-border);

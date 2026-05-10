@@ -11,7 +11,7 @@ import BlogPreview from "@/components/home/BlogPreview";
 import WhatsAppCTA from "@/components/home/WhatsAppCTA";
 import InquiryForm from "@/components/home/InquiryForm";
 import BottomNavbar from "@/components/layout/BottomNavbar";
-
+import FeaturedPackages from "@/components/home/FeaturedPackages";
 export default function Home() {
   return (
     <main className="bg-[#071120] text-white overflow-hidden">
@@ -25,6 +25,8 @@ export default function Home() {
       <VisaServices />
 
       <FeaturedDestinations />
+
+      <FeaturedPackages />
 
       <WhyChooseUs />
 

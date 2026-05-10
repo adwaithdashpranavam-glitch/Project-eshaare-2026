@@ -2,9 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search } from "lucide-react";
 import "@fontsource/pinyon-script";
-import { CiLocationOn } from "react-icons/ci";
 
 const slides = [
   {
@@ -47,7 +45,6 @@ const slides = [
 
 export default function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [searchQuery, setSearchQuery] = useState("");
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   useEffect(() => {
@@ -73,7 +70,7 @@ export default function Hero() {
 
   return (
     <section className="min-h-screen bg-[#f5f5f5] px-4 pt-20 pb-6 md:px-8">
-      <div className="mx-auto max-w-7xl">
+       <div className="mx-auto max-w-[95%]">
 
         {/* HERO CARD */}
         <div className="relative mt-6 h-[72vh] overflow-visible rounded-[40px] shadow-2xl">
@@ -137,28 +134,7 @@ export default function Hero() {
               </button>
             </div>
 
-            {/* SEARCH BAR */}
-<div className="absolute -bottom-12 left-1/2 z-30 w-full max-w-3xl -translate-x-1/2 px-6">
-  <div className="flex h-16 items-center overflow-hidden rounded-full bg-white shadow-[0_18px_45px_rgba(0,0,0,0.16)]">
 
-    <CiLocationOn
-      className="ml-6 text-3xl text-gray-400"
-    />
-
-    <input
-      type="text"
-      placeholder="Search Destinations or Events"
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
-      className="w-full bg-transparent px-4 text-base text-gray-700 outline-none"
-    />
-
-    <button className="mr-2 rounded-full bg-orange-500 p-4 text-white transition hover:bg-orange-600">
-      <Search size={22} />
-    </button>
-
-  </div>
-</div>
 
           </div>
         </div>

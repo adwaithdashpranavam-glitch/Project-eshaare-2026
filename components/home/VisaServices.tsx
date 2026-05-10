@@ -1,50 +1,172 @@
-const services = [
-  "Schengen Visa",
-  "UK Visa",
-  "USA Visa",
-  "Japan Visa",
-  "UAE Visa",
-  "Saudi Visa",
+"use client";
+
+import { useEffect, useRef } from "react";
+import Image from "next/image";
+import { ArrowRight } from "lucide-react";
+
+
+const packages = [
+  {
+    title: "Dubai",
+    days: "5 Days / 4 Nights",
+    image:
+      "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=1200&auto=format&fit=crop",
+  },
+  {
+    title: "Maldives",
+    days: "4 Days / 3 Nights",
+    image:
+      "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?q=80&w=1200&auto=format&fit=crop",
+  },
+  {
+    title: "Bali",
+    days: "6 Days / 5 Nights",
+    image:
+      "https://images.unsplash.com/photo-1537996194471-e657df975ab4?q=80&w=1200&auto=format&fit=crop",
+  },
+  {
+    title: "Thailand",
+    days: "5 Days / 4 Nights",
+    image:
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop",
+  },
 ];
 
-export default function VisaServices() {
+export default function PackageSlider() {
   return (
-    <section className="py-24 px-6">
+    <section className="w-full overflow-hidden py-16 bg-white">
+      <div className="mx-auto max-w-[90%]">
+        {/* TOP HEADING */}
+        <div className="flex items-center justify-between mb-10">
+          <div>
+            <h2 className="text-4xl md:text-5xl font-bold text-[#071120]">
+              Trending Packages
+            </h2>
 
-      <div className="max-w-7xl mx-auto">
+            <p className="text-gray-500 mt-3 text-lg">
+              Explore luxury destinations with ESHAARE
+            </p>
+          </div>
 
-        <div className="mb-14">
-          <p className="text-[#D4AF37] uppercase tracking-[3px]">
-            Visa Services
-          </p>
-
-          <h2 className="text-4xl font-bold mt-4">
-            Premium Visa Assistance
-          </h2>
+          {/* VIEW MORE */}
+         <button
+            className="
+              hidden md:flex items-center gap-2
+              bg-gradient-to-r from-[#d49237] to-[#f4d06f]
+              hover:scale-105
+              transition-all duration-300
+              text-[#071120]
+              px-6 py-3
+              rounded-full
+              font-semibold
+              shadow-lg shadow-[#d4af37]/20
+            "
+          >
+            View More
+            <ArrowRight className="w-4 h-4" />
+          </button>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        {/* SLIDER */}
+        <div className="relative overflow-hidden">
+          <div className="flex gap-6 animate-scroll w-max">
+            {[...packages, ...packages].map((item, index) => (
+              <div
+                key={index}
+                className="
+                  min-w-[100px]
+                  md:min-w-[190px]
+                  lg:min-w-[220px]
+                  rounded-[30px]
+                  overflow-hidden
+                  relative
+                  group
+                  bg-white
+                  border border-gray-200
+                  hover:border-[#d4af37]/40
+                  transition-all duration-500
+                  hover:-translate-y-2
+                  flex-shrink-0
+                  shadow-sm
+                  hover:shadow-2xl
+                "
+              >
+                {/* IMAGE */}
+                <div className="relative h-[200px] overflow-hidden">
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
+                    className="
+                      object-cover
+                      group-hover:scale-110
+                      transition-transform duration-700
+                    "
+                  />
 
-          {services.map((service) => (
-            <div
-              key={service}
-              className="bg-white/5 border border-white/10 rounded-3xl p-8 hover:border-[#D4AF37] transition"
-            >
-              <h3 className="text-2xl font-semibold">
-                {service}
-              </h3>
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#071120] via-black/20 to-transparent" />
 
-              <p className="text-gray-400 mt-4 leading-7">
-                Professional consultation and document support
-                for fast visa approval.
-              </p>
-            </div>
-          ))}
+                  {/* Title */}
+                  <div className="absolute bottom-5 left-5">
+                    <h3 className="text-3xl font-bold text-white">
+                      {item.title}
+                    </h3>
 
+                    <p className="text-white/80 text-sm mt-1">
+                      {item.days}
+                    </p>
+                  </div>
+                </div>
+
+                {/* CONTENT */}
+                <div className="p-6">
+                  <p className="text-gray-600 leading-relaxed text-sm">
+                    Experience luxury stays, premium adventures, and unforgettable
+                    memories in {item.title}.
+                  </p>
+
+                  <button
+                    className="
+                      mt-6 w-full
+                      bg-gradient-to-r
+                      from-[#d49237]
+                      via-[#f4d06f]
+                      to-[#d4af37]
+                      text-[#071120]
+                      py-3.5
+                      rounded-2xl
+                      font-semibold
+                      hover:scale-[1.02]
+                      transition-all duration-300
+                      shadow-lg shadow-[#d4af37]/20
+                    "
+                  >
+                    Explore Package
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
+        {/* MOBILE VIEW MORE */}
+        <div className="flex justify-center mt-8 md:hidden">
+         <button
+            className="
+              flex items-center gap-2
+              bg-gradient-to-r from-[#f09a39] to-[#f4d06f]
+              text-[#071120]
+              px-6 py-3
+              rounded-full
+              font-semibold
+            "
+          >
+            View More
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
       </div>
-
     </section>
   );
 }
