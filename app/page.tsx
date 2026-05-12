@@ -44,3 +44,13 @@ export default function Home() {
     </main>
   );
 }
+
+// import LuxuryEarth from "@/components/home/LuxuryEarth";
+
+// export default function HomePage() {
+//   return (
+//     <main>
+//       <LuxuryEarth />
+//     </main>
+//   );
+// }

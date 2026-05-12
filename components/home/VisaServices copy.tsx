@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 
@@ -50,8 +49,7 @@ export default function PackageSlider() {
           </div>
 
           {/* VIEW MORE */}
-         <Link
-            href="/visa"
+         <button
             className="
               hidden md:flex items-center gap-2
               bg-gradient-to-r from-[#d49237] to-[#f4d06f]
@@ -66,7 +64,7 @@ export default function PackageSlider() {
           >
             View More
             <ArrowRight className="w-4 h-4" />
-          </Link>
+          </button>
         </div>
 
         {/* SLIDER */}
@@ -126,10 +124,9 @@ export default function PackageSlider() {
                     Get hassle-free and quick visa processing for your travel to {item.title}.
                   </p>
 
-                  <Link
-                    href="/visa"
+                  <button
                     className="
-                      mt-6 w-full text-center block
+                      mt-6 w-full
                       bg-gradient-to-r
                       from-[#d49237]
                       via-[#f4d06f]
@@ -144,7 +141,7 @@ export default function PackageSlider() {
                     "
                   >
                     Apply for Visa
-                  </Link>
+                  </button>
                 </div>
               </div>
             ))}
@@ -153,8 +150,7 @@ export default function PackageSlider() {
 
         {/* MOBILE VIEW MORE */}
         <div className="flex justify-center mt-8 md:hidden">
-         <Link
-            href="/visa"
+         <button
             className="
               flex items-center gap-2
               bg-gradient-to-r from-[#f09a39] to-[#f4d06f]
@@ -166,7 +162,7 @@ export default function PackageSlider() {
           >
             View More
             <ArrowRight className="w-4 h-4" />
-          </Link>
+          </button>
         </div>
       </div>
     </section>
