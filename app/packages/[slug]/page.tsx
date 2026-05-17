@@ -1,16 +1,86 @@
-import { packages } from "@/data/packages";
+"use client";
+
+import { useEffect, useState } from "react";
+
+import { useParams } from "next/navigation";
+
 import Image from "next/image";
 
-type Props = {
-  params: {
-    slug: string;
-  };
-};
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 
-export default function PackageDetails({ params }: Props) {
-  const pkg = packages.find(
-    (item) => item.slug === params.slug
-  );
+import { db } from "@/lib/firebase";
+
+import { Package } from "@/types/package";
+
+export default function PackageDetails() {
+  const params = useParams();
+
+  const slug = params.slug as string;
+
+  const [pkg, setPkg] = useState<Package | null>(null);
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPackage = async () => {
+      try {
+        const q = query(
+          collection(db, "packages"),
+          where("slug", "==", slug)
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          const doc = querySnapshot.docs[0];
+
+          const data = doc.data();
+
+          setPkg({
+            id: doc.id,
+            title: data.title || "",
+            slug: data.slug || "",
+            image: data.image || "",
+            price: data.price || "",
+            duration: data.duration || "",
+            category: data.category || "",
+            destination: data.destination || "",
+            featured: data.featured || false,
+
+            overview: data.overview || "",
+
+            gallery: data.gallery || [],
+
+            itinerary: data.itinerary || [],
+
+            inclusions: data.inclusions || [],
+
+            exclusions: data.exclusions || [],
+          });
+        }
+
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPackage();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-white bg-[#071120]">
+        Loading Package...
+      </div>
+    );
+  }
 
   if (!pkg) {
     return (
@@ -50,6 +120,7 @@ export default function PackageDetails({ params }: Props) {
           </p>
 
         </div>
+
       </section>
 
       {/* CONTENT */}
@@ -60,6 +131,7 @@ export default function PackageDetails({ params }: Props) {
 
           {/* Overview */}
           <div className="bg-white/5 border border-white/10 rounded-3xl p-8">
+
             <h2 className="text-3xl font-bold mb-6">
               Overview
             </h2>
@@ -67,43 +139,53 @@ export default function PackageDetails({ params }: Props) {
             <p className="text-white/70 leading-8">
               {pkg.overview}
             </p>
+
           </div>
 
           {/* Gallery */}
           <div className="mt-10">
+
             <h2 className="text-3xl font-bold mb-6">
               Gallery
             </h2>
 
             <div className="grid md:grid-cols-3 gap-4">
-              {pkg.gallery.map((img) => (
+
+              {pkg.gallery?.map((img) => (
                 <div
                   key={img}
                   className="relative h-60 rounded-2xl overflow-hidden"
                 >
+
                   <Image
                     src={img}
                     alt=""
                     fill
                     className="object-cover hover:scale-110 transition duration-500"
                   />
+
                 </div>
               ))}
+
             </div>
+
           </div>
 
           {/* Itinerary */}
           <div className="mt-14">
+
             <h2 className="text-3xl font-bold mb-8">
               Itinerary
             </h2>
 
             <div className="space-y-6">
-              {pkg.itinerary.map((day, index) => (
+
+              {pkg.itinerary?.map((day, index) => (
                 <div
                   key={index}
                   className="flex gap-4 items-start"
                 >
+
                   <div className="h-10 w-10 rounded-full bg-[#00C2FF] text-black flex items-center justify-center font-bold">
                     {index + 1}
                   </div>
@@ -111,43 +193,55 @@ export default function PackageDetails({ params }: Props) {
                   <div className="bg-white/5 border border-white/10 rounded-2xl p-5 flex-1">
                     {day}
                   </div>
+
                 </div>
               ))}
+
             </div>
+
           </div>
 
           {/* Includes */}
           <div className="mt-14 grid md:grid-cols-2 gap-6">
 
             <div className="bg-white/5 border border-white/10 rounded-3xl p-8">
+
               <h3 className="text-2xl font-bold mb-6">
                 Includes
               </h3>
 
               <div className="space-y-4">
-                {pkg.includes.map((item) => (
+
+                {pkg.inclusions?.map((item) => (
                   <div key={item}>
                     ✓ {item}
                   </div>
                 ))}
+
               </div>
+
             </div>
 
             <div className="bg-white/5 border border-white/10 rounded-3xl p-8">
+
               <h3 className="text-2xl font-bold mb-6">
                 Excludes
               </h3>
 
               <div className="space-y-4 text-white/70">
-                {pkg.excludes.map((item) => (
+
+                {pkg.exclusions?.map((item) => (
                   <div key={item}>
                     ✕ {item}
                   </div>
                 ))}
+
               </div>
+
             </div>
 
           </div>
+
         </div>
 
         {/* RIGHT SIDEBAR */}

@@ -1,48 +1,169 @@
-import { packages } from "@/data/packages";
-import PackageCard from "@/components/packages/PackageCard";
+"use client";
+
+import { useEffect, useState } from "react";
+
+import Link from "next/link";
+import Image from "next/image";
+
+import { ArrowRight } from "lucide-react";
+
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+
+import { db } from "@/lib/firebase";
+
+import { Package } from "@/types/package";
 
 export default function FeaturedPackages() {
+  const [packages, setPackages] = useState<Package[]>([]);
+
+  useEffect(() => {
+    const fetchPackages = async () => {
+      try {
+        const q = query(
+          collection(db, "packages"),
+          where("featured", "==", true)
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        const packagesData: Package[] = [];
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+
+          packagesData.push({
+            id: doc.id,
+            title: data.title || "",
+            slug: data.slug || "",
+            image: data.image || "",
+            price: data.price || "",
+            duration: data.duration || "",
+            category: data.category || "",
+            destination: data.destination || "",
+            featured: data.featured || false,
+            overview: data.overview || "",
+            gallery: data.gallery || [],
+            itinerary: data.itinerary || [],
+            inclusions: data.inclusions || [],
+            exclusions: data.exclusions || [],
+          });
+        });
+
+        setPackages(packagesData);
+
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchPackages();
+  }, []);
+
   return (
-    <section className="bg-[#f5f5f5] px-4 py-24 md:px-8">
+    <section className="bg-[#f5f5f5] px-4 py-20 md:px-8">
+
       <div className="mx-auto max-w-7xl">
 
-        {/* VIBE CONTAINER */}
-        <div className="relative overflow-hidden rounded-[40px] bg-[#071120] px-6 py-16 shadow-2xl md:px-12 lg:px-14">
+        {/* TOP HEADER */}
+        <div className="mb-10 flex items-center justify-between">
 
-          {/* SOFT GLOW */}
-          <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#FF7A00]/20 blur-[90px]" />
-          <div className="absolute -bottom-28 -left-28 h-72 w-72 rounded-full bg-white/10 blur-[90px]" />
+          <div>
 
-          {/* HEADER */}
-          <div className="relative z-10 mb-12 text-center">
-            <p className="text-sm font-semibold uppercase tracking-[4px] text-[#FF7A00]">
-              Luxury Packages
+            <p className="text-sm font-semibold uppercase tracking-[3px] text-[#e68932]">
+              Trending Tours
             </p>
 
-            <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-white md:text-4xl">
-              Explore Trending Tours
+            <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-[#071120] md:text-4xl">
+              Explore Trending Tour Packages
             </h2>
 
-            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-white/60 md:text-base">
-              Discover premium travel experiences crafted for unforgettable
-              adventures around the world.
-            </p>
           </div>
 
-          {/* GRID */}
-          <div className="relative z-10 flex flex-wrap justify-center gap-6">
-            {packages.slice(0, 3).map((item) => (
-              <div
-                key={item.slug}
-                className="w-[260px] flex-shrink-0 rounded-[32px] border border-white/10 bg-white/[0.04] p-2 backdrop-blur-md transition hover:-translate-y-2 hover:bg-white/[0.07]"
-              >
-                <PackageCard item={item} />
-              </div>
-            ))}
-          </div>
+          {/* VIEW MORE */}
+          <Link
+            href="/tours"
+            className="
+              hidden md:flex items-center gap-2
+              bg-gradient-to-r from-[#d49237] to-[#f4d06f]
+              hover:scale-105
+              transition-all duration-300
+              text-[#071120]
+              px-6 py-3
+              rounded-full
+              font-semibold
+              shadow-lg shadow-[#d4af37]/20
+            "
+          >
+            View More
+            <ArrowRight size={16} />
+          </Link>
 
         </div>
+
+        {/* PACKAGE GRID */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+          {packages.map((tour) => (
+            <Link
+              key={tour.id}
+              href={`/packages/${tour.slug}`}
+              className="group relative overflow-hidden rounded-[26px] shadow-xl"
+            >
+
+              {/* IMAGE */}
+              <div className="relative h-[360px] w-full overflow-hidden">
+
+                <Image
+                  src={tour.image}
+                  alt={tour.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 25vw"
+                  className="object-cover transition duration-700 group-hover:scale-110"
+                />
+
+                {/* DARK OVERLAY */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/10" />
+
+                {/* CONTENT */}
+                <div className="absolute bottom-7 left-0 w-full text-center">
+
+                  <h3 className="text-3xl font-bold text-white drop-shadow-lg">
+                    {tour.destination}
+                  </h3>
+
+                  <p className="mt-2 text-xs font-semibold uppercase tracking-[4px] text-white/90">
+                    Explore
+                  </p>
+
+                </div>
+
+              </div>
+
+            </Link>
+          ))}
+
+        </div>
+
+        {/* MOBILE VIEW MORE */}
+        <div className="mt-10 flex justify-center md:hidden">
+
+          <Link
+            href="/tours"
+            className="flex items-center gap-2 rounded-full bg-[#e68932] px-6 py-3 text-sm font-semibold text-white shadow-lg"
+          >
+            View More
+            <ArrowRight size={16} />
+          </Link>
+
+        </div>
+
       </div>
+
     </section>
   );
 }

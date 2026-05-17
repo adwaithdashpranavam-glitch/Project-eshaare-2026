@@ -1,16 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { Package } from "@/types/package";
+
 type Props = {
-  item: {
-    slug: string;
-    title: string;
-    location: string;
-    duration: string;
-    price: string;
-    category: string;
-    image: string;
-  };
+  item: Package;
 };
 
 export default function PackageCard({ item }: Props) {
@@ -42,7 +36,7 @@ export default function PackageCard({ item }: Props) {
 
           <div className="flex items-center justify-between">
             <p className="text-sm text-white/60">
-              {item.location}
+              {item.destination}
             </p>
 
             <p className="text-sm font-semibold text-[#00C2FF]">

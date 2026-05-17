@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-
+import BottomNavbar from "@/components/layout/BottomNavbar";
 import "./globals.css";
 
-// IMPORT NAVBARS
+// IMPORT NAVBAR
 import Navbar from "@/components/layout/Navbar";
-import BottomNavbar from "@/components/layout/BottomNavbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,10 +41,11 @@ export default function RootLayout({
           {children}
         </main>
 
-        {/* MOBILE BOTTOM NAVBAR */}
+        {/* GLOBAL BOTTOM NAVBAR */}
         <BottomNavbar />
 
       </body>
     </html>
+
   );
 }

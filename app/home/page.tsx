@@ -10,33 +10,32 @@ import BlogPreview from "@/components/home/BlogPreview";
 import WhatsAppCTA from "@/components/home/WhatsAppCTA";
 import InquiryForm from "@/components/home/InquiryForm";
 import FeaturedPackages from "@/components/home/FeaturedPackages";
-
 export default function MainHomePage() {
-  return (
-    <main className="bg-[#071120] text-white overflow-hidden min-h-screen">
+    return (
+        <main className="bg-[#071120] text-white overflow-hidden min-h-screen">
 
-      <Hero />
+            <Hero />
 
-      <VisaServices />
+            <VisaServices />
 
-      <FeaturedPackages />
+            <FeaturedPackages />
 
-      <FeaturedDestinations />
+            <FeaturedDestinations />
 
-      <WhyChooseUs />
+            <WhyChooseUs />
 
-      <Testimonials />
+            <Testimonials />
 
-      <LatestOffers />
+            <LatestOffers />
 
-      <BlogPreview />
+            <BlogPreview />
 
-      <WhatsAppCTA />
+            <WhatsAppCTA />
 
-      <InquiryForm />
+            <InquiryForm />
 
-      <Footer />
+            <Footer />
 
-    </main>
-  );
+        </main>
+    );
 }

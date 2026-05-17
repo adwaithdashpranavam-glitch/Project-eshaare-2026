@@ -29,16 +29,16 @@ const destinations = [
 
 export default function FeaturedDestinations() {
   return (
-    <section className="py-24 px-6">
+    <section className="bg-[#f5f5f5] px-4 py-20 md:px-8">
 
       <div className="max-w-7xl mx-auto">
 
         <div className="mb-14">
-          <p className="text-[#D4AF37] uppercase tracking-[3px]">
+          <p className="text-sm font-semibold uppercase tracking-[3px] text-[#e68932]">
             Destinations
           </p>
 
-          <h2 className="text-4xl font-bold mt-4">
+          <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-[#071120] md:text-4xl">
             Popular Destinations
           </h2>
         </div>
