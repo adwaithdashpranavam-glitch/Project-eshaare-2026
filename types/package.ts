@@ -4,18 +4,18 @@ export type Package = {
     slug: string;
     image: string;
     price: string;
+    seasonalPrice?: string;
     duration: string;
     category: string;
     destination: string;
     featured: boolean;
-
+    active: boolean;
+    seatsLeft?: number;
+    offerText?: string;
+    seasonTag?: string;
     overview?: string;
-
     gallery?: string[];
-
     itinerary?: string[];
-
     inclusions?: string[];
-
     exclusions?: string[];
 };

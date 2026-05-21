@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import Link from "next/link";
 
@@ -17,6 +18,7 @@ export default function PackageCard({ item }: Props) {
 
         {/* IMAGE */}
         <div className="relative h-48 overflow-hidden">
+
           <Image
             src={item.image}
             alt={item.title}
@@ -26,15 +28,25 @@ export default function PackageCard({ item }: Props) {
 
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
 
+          {/* CATEGORY */}
           <div className="absolute top-4 left-4 rounded-full bg-[#00C2FF] px-3 py-1 text-xs font-semibold text-black">
             {item.category}
           </div>
+
+          {/* OFFER BADGE */}
+          {item.offerText && (
+            <div className="absolute top-4 right-4 rounded-full bg-red-500 px-3 py-1 text-xs font-bold text-white shadow-lg">
+              {item.offerText}
+            </div>
+          )}
+
         </div>
 
         {/* CONTENT */}
         <div className="p-5">
 
           <div className="flex items-center justify-between">
+
             <p className="text-sm text-white/60">
               {item.destination}
             </p>
@@ -42,22 +54,47 @@ export default function PackageCard({ item }: Props) {
             <p className="text-sm font-semibold text-[#00C2FF]">
               {item.duration}
             </p>
+
           </div>
 
           <h2 className="mt-3 text-xl font-bold">
             {item.title}
           </h2>
 
+          {/* SEASON TAG */}
+          {item.seasonTag && (
+            <p className="mt-2 text-sm text-orange-400">
+              {item.seasonTag}
+            </p>
+          )}
+
           <div className="mt-6 flex items-center justify-between">
 
             <div>
+
               <p className="text-xs text-white/50">
                 Starting From
               </p>
 
+              {/* OLD PRICE */}
+              {item.seasonalPrice && (
+                <p className="text-sm text-red-400 line-through">
+                  {item.seasonalPrice}
+                </p>
+              )}
+
+              {/* CURRENT PRICE */}
               <h3 className="text-xl font-bold">
                 {item.price}
               </h3>
+
+              {/* SEATS LEFT */}
+              {item.seatsLeft ? (
+                <p className="mt-1 text-xs text-orange-400">
+                  Only {item.seatsLeft} Seats Left
+                </p>
+              ) : null}
+
             </div>
 
             <button className="rounded-xl bg-[#00C2FF] px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90">

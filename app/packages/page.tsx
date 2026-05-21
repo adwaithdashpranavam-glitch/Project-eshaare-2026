@@ -1,86 +1,251 @@
-import Image from "next/image";
-import Link from "next/link";
+"use client";
 
-type Props = {
-  item: {
-    slug: string;
-    title: string;
-    location: string;
-    duration: string;
-    price: string;
-    category: string;
-    image: string;
-  };
-};
+import { useEffect, useMemo, useState } from "react";
 
-export default function PackageCard({ item }: Props) {
-  return (
-    <Link
-      href={`/packages/${item.slug}`}
-      className="group"
-    >
-      <div className="relative h-[520px] overflow-hidden rounded-[34px] transition-all duration-500 group-hover:-translate-y-2">
+import { collection, getDocs, query, where, } from "firebase/firestore";
 
-        {/* IMAGE */}
-        <Image
-          src={item.image}
-          alt={item.title}
-          fill
-          className="object-cover transition duration-[2500ms] ease-out group-hover:scale-110"
-        />
+import { db } from "@/lib/firebase";
 
-        {/* OVERLAY */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+import { Package } from "@/types/package";
 
-        {/* CATEGORY */}
-        <div className="absolute left-5 top-5 rounded-full bg-white/15 px-4 py-2 text-sm backdrop-blur-xl border border-white/20">
-          {item.category}
-        </div>
+import PackageCard from "@/components/packages/PackageCard";
 
-        {/* CONTENT */}
-        <div className="absolute bottom-0 left-0 w-full p-6">
+export default function PackagesPage() {
+    const [packages, setPackages] = useState<Package[]>([]);
 
-          <div className="rounded-[28px] border border-white/10 bg-white/8 p-6 backdrop-blur-xl shadow-[0_8px_40px_rgba(0,0,0,0.25)]">
+    const [loading, setLoading] = useState(true);
 
-            <div className="flex items-center justify-between">
+    const [search, setSearch] = useState("");
 
-              <p className="text-sm uppercase tracking-[2px] text-[#00C2FF]">
-                {item.location}
-              </p>
+    const [selectedCategory, setSelectedCategory] =
+        useState("All");
 
-              <p className="text-sm text-white/70">
-                {item.duration}
-              </p>
+    useEffect(() => {
+        const fetchPackages = async () => {
+            try {
+                const q = query(collection(db, "packages"), where("active", "==", true));
 
-            </div>
+                const querySnapshot = await getDocs(q);
 
-            <h2 className="mt-4 text-4xl font-bold leading-tight text-white">
-              {item.title}
-            </h2>
+                const packagesData: Package[] = [];
 
-            <div className="mt-6 flex items-center justify-between">
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
 
-              <div>
-                <p className="text-sm text-white/60">
-                  Starting From
-                </p>
+                    packagesData.push({
+                        id: doc.id,
+                        title: data.title || "",
+                        slug: data.slug || "",
+                        image: data.image || "",
+                        price: data.price || "",
+                        seasonalPrice: data.seasonalPrice || "",
+                        duration: data.duration || "",
+                        category: data.category || "",
+                        destination: data.destination || "",
+                        featured: data.featured || false,
+                        overview: data.overview || "",
+                        gallery: data.gallery || [],
+                        itinerary: data.itinerary || [],
+                        inclusions: data.inclusions || [],
+                        exclusions: data.exclusions || [],
+                        offerText: data.offerText || "",
+                        seasonTag: data.seasonTag || "",
+                        seatsLeft: data.seatsLeft || 0,
+                        active: data.active ?? true,
+                    });
+                });
 
-                <h3 className="text-3xl font-bold text-white">
-                  {item.price}
-                </h3>
-              </div>
+                setPackages(packagesData);
 
-              <button className="rounded-full bg-[#00C2FF] px-6 py-3 font-semibold text-black transition hover:scale-105">
-                Explore
-              </button>
+            } catch (error) {
+                console.log(error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-            </div>
+        fetchPackages();
+    }, []);
 
-          </div>
+    // UNIQUE CATEGORIES
+    const categories = useMemo(() => {
+        const allCategories = packages.map(
+            (item) => item.category
+        );
 
-        </div>
+        return ["All", ...new Set(allCategories)];
+    }, [packages]);
 
-      </div>
-    </Link>
-  );
+    // FILTERED PACKAGES
+    const filteredPackages = useMemo(() => {
+        return packages.filter((item) => {
+
+            const matchesSearch =
+                item.title
+                    .toLowerCase()
+                    .includes(search.toLowerCase()) ||
+
+                item.destination
+                    .toLowerCase()
+                    .includes(search.toLowerCase());
+
+            const matchesCategory =
+                selectedCategory === "All" ||
+                item.category === selectedCategory;
+
+            return (
+                matchesSearch &&
+                matchesCategory &&
+                item.active
+            );
+        });
+    }, [packages, search, selectedCategory]);
+
+    return (
+        <main className="min-h-screen bg-[#071120] text-white">
+
+            {/* HERO */}
+            <section className="relative overflow-hidden border-b border-white/10 bg-gradient-to-b from-[#0b1830] to-[#071120]">
+
+                <div className="max-w-7xl mx-auto px-6 py-24">
+
+                    <p className="text-sm uppercase tracking-[5px] text-[#00C2FF]">
+                        Luxury Experiences
+                    </p>
+
+                    <h1 className="mt-4 text-5xl font-bold md:text-6xl">
+                        Explore Tour Packages
+                    </h1>
+
+                    <p className="mt-6 max-w-2xl text-lg leading-8 text-white/70">
+                        Discover premium international holiday
+                        experiences, seasonal offers, luxury escapes,
+                        honeymoon packages, and adventure tours.
+                    </p>
+
+                    {/* SEARCH */}
+                    <div className="mt-10">
+
+                        <input
+                            type="text"
+                            placeholder="Search destination or package..."
+                            value={search}
+                            onChange={(e) =>
+                                setSearch(e.target.value)
+                            }
+                            className="h-14 w-full max-w-2xl rounded-2xl border border-white/10 bg-white/5 px-6 text-white outline-none backdrop-blur-xl placeholder:text-white/40 focus:border-[#00C2FF]"
+                        />
+
+                    </div>
+
+                    {/* FILTERS */}
+                    <div className="mt-8 flex flex-wrap gap-3">
+
+                        {categories.map((category) => (
+                            <button
+                                key={category}
+                                onClick={() =>
+                                    setSelectedCategory(category)
+                                }
+                                className={`rounded-full px-5 py-3 text-sm font-semibold transition ${selectedCategory === category
+                                    ? "bg-[#00C2FF] text-black"
+                                    : "border border-white/10 bg-white/5 text-white hover:border-[#00C2FF]/40"
+                                    }`}
+                            >
+                                {category}
+                            </button>
+                        ))}
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            {/* PACKAGES */}
+            <section className="max-w-7xl mx-auto px-6 py-20">
+
+                {/* TOP */}
+                <div className="mb-10 flex items-center justify-between">
+
+                    <div>
+
+                        <h2 className="text-3xl font-bold">
+                            Available Packages
+                        </h2>
+
+                        <p className="mt-2 text-white/60">
+                            Showing {filteredPackages.length} package(s)
+                        </p>
+
+                    </div>
+
+                </div>
+
+                {/* LOADING */}
+                {loading ? (
+                    <div className="flex h-[300px] items-center justify-center text-xl text-white/70">
+                        Loading Packages...
+                    </div>
+
+                ) : filteredPackages.length === 0 ? (
+
+                    <div className="flex h-[300px] flex-col items-center justify-center rounded-[30px] border border-white/10 bg-white/5 text-center">
+
+                        <h3 className="text-3xl font-bold">
+                            No Packages Found
+                        </h3>
+
+                        <p className="mt-3 text-white/60">
+                            Try another search or filter.
+                        </p>
+
+                    </div>
+
+                ) : (
+
+                    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+
+                        {filteredPackages.map((item) => (
+                            <div key={item.id}>
+
+                                {/* OFFER BADGE */}
+                                {item.offerText && (
+                                    <div className="mb-4 inline-flex rounded-full bg-[#00C2FF]/10 px-4 py-2 text-sm font-semibold text-[#00C2FF]">
+                                        {item.offerText}
+                                    </div>
+                                )}
+
+                                <PackageCard item={item} />
+
+                                {/* EXTRA INFO */}
+                                <div className="mt-4 flex items-center justify-between px-2">
+
+                                    {item.seasonTag ? (
+                                        <p className="text-sm text-white/50">
+                                            {item.seasonTag}
+                                        </p>
+                                    ) : (
+                                        <div />
+                                    )}
+
+                                    {item.seatsLeft ? (
+                                        <p className="text-sm font-semibold text-[#00C2FF]">
+                                            {item.seatsLeft} Seats Left
+                                        </p>
+                                    ) : null}
+
+                                </div>
+
+                            </div>
+                        ))}
+
+                    </div>
+
+                )}
+
+            </section>
+
+        </main>
+    );
 }

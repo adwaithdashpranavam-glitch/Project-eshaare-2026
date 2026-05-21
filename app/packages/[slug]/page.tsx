@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 
 import { useParams } from "next/navigation";
-
 import Image from "next/image";
 
 import {
@@ -37,12 +36,11 @@ export default function PackageDetails() {
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
-          const doc = querySnapshot.docs[0];
-
-          const data = doc.data();
+          const packageDoc = querySnapshot.docs[0];
+          const data = packageDoc.data();
 
           setPkg({
-            id: doc.id,
+            id: packageDoc.id,
             title: data.title || "",
             slug: data.slug || "",
             image: data.image || "",
@@ -61,6 +59,8 @@ export default function PackageDetails() {
             inclusions: data.inclusions || [],
 
             exclusions: data.exclusions || [],
+
+            active: data.active ?? true,
           });
         }
 
@@ -100,6 +100,7 @@ export default function PackageDetails() {
           src={pkg.image}
           alt={pkg.title}
           fill
+          sizes="100vw"
           className="object-cover"
         />
 
@@ -261,9 +262,7 @@ export default function PackageDetails() {
               Book Now
             </button>
 
-            <button className="w-full mt-4 border border-black/10 py-4 rounded-2xl font-semibold">
-              WhatsApp Inquiry
-            </button>
+            <button onClick={() => { window.open(`https://wa.me/971000000000?text=Hi I want details about ${pkg.title}`); }} className="w-full mt-4 border border-black/10 py-4 rounded-2xl font-semibold" > WhatsApp Inquiry </button>
 
           </div>
 

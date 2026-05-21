@@ -82,7 +82,7 @@ export default function BottomNavbar() {
 
           {/* EVENTS */}
           <Link
-            href="/events"
+            href="/tours"
             className="flex flex-col items-center justify-center gap-1 text-xs text-gray-700 transition hover:text-[#e68932]"
           >
             <CalendarDays size={20} />
