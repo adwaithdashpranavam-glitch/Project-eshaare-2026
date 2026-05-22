@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 
 // Security: Define your master admin emails here. 
@@ -80,6 +80,17 @@ export default function AdminLayout({
 
                     if (isSuperAdmin || isFirestoreAdmin) {
                         // User is verified admin
+                        if (isSuperAdmin) {
+                            try {
+                                const userRef = doc(db, "users", user.uid);
+                                await setDoc(userRef, {
+                                    email: user.email?.toLowerCase(),
+                                    role: "admin"
+                                }, { merge: true });
+                            } catch (err) {
+                                console.error("Error auto-provisioning super admin Firestore role:", err);
+                            }
+                        }
                         setLoading(false);
                         // If they are on the login page but already logged in, redirect to dashboard
                         if (pathname === "/admin/login") {

@@ -1,5 +1,6 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import VisaCTA from "@/components/visa/VisaCTA";
 
 export default function JapanVisaPage() {
   return (
@@ -56,13 +57,10 @@ export default function JapanVisaPage() {
         </div>
 
         {/* CTA */}
-        <div className="mt-12">
-
-          <button className="rounded-full bg-[#FF9F1C] px-8 py-4 text-lg font-semibold text-black transition hover:bg-[#F48C06]">
-            Apply Via WhatsApp
-          </button>
-
-        </div>
+        <VisaCTA
+          country="Japan"
+          whatsappUrl="https://wa.me/971501234567?text=Hi%20Eshaare%2C%20I%20want%20to%20apply%20for%20a%20Japan%20Visa%20from%20UAE."
+        />
 
       </section>
 

@@ -28,25 +28,69 @@ export default function AppointmentsAdminPage() {
     useEffect(() => {
         const fetchAppointments = async () => {
             try {
-                const q = query(
-                    collection(db, "appointments"),
-                    orderBy("createdAt", "desc")
-                );
-
+                // Remove orderBy to avoid index requirement failure
+                const q = query(collection(db, "appointments"));
                 const querySnapshot = await getDocs(q);
 
-                const data: Appointment[] = [];
+                const data: (Appointment & { createdAtDate?: Date })[] = [];
                 querySnapshot.forEach((docItem) => {
                     const docData = docItem.data();
+                    
+                    // Parse createdAt to a Date object safely
+                    let createdAtDate: Date | undefined = undefined;
+                    if (docData.createdAt) {
+                        try {
+                            if (typeof docData.createdAt.toDate === "function") {
+                                createdAtDate = docData.createdAt.toDate();
+                            } else if (docData.createdAt.seconds) {
+                                createdAtDate = new Date(docData.createdAt.seconds * 1000);
+                            } else {
+                                createdAtDate = new Date(docData.createdAt);
+                            }
+                        } catch (e) {
+                            console.error("Error parsing createdAt:", e);
+                        }
+                    }
+
+                    // Schema Fallbacks
+                    const customerName = docData.customerName || docData.name || "Anonymous Client";
+                    const visaType = docData.visaType || docData.serviceType || "General Consultation";
+                    
+                    // Format Date fallback from createdAt if not explicitly set
+                    let date = docData.date || "";
+                    if (!date && createdAtDate) {
+                        date = createdAtDate.toLocaleDateString();
+                    }
+
+                    // Time fallback
+                    let time = docData.time || docData.preferredTime || "";
+                    if (!time && docData.details) {
+                        const match = docData.details.match(/Preferred time:\s*(.*)$/i);
+                        if (match) {
+                            time = match[1];
+                        }
+                    }
+                    if (!time) {
+                        time = "Anytime";
+                    }
+
                     data.push({
                         id: docItem.id,
-                        customerName: docData.customerName || "",
+                        customerName,
                         phone: docData.phone || "",
-                        visaType: docData.visaType || "",
-                        date: docData.date || "",
-                        time: docData.time || "",
+                        visaType,
+                        date,
+                        time,
                         status: docData.status || "pending",
+                        createdAtDate
                     });
+                });
+
+                // Client-side sorting (newest first)
+                data.sort((a, b) => {
+                    const timeA = a.createdAtDate?.getTime() || 0;
+                    const timeB = b.createdAtDate?.getTime() || 0;
+                    return timeB - timeA;
                 });
 
                 setAppointments(data);

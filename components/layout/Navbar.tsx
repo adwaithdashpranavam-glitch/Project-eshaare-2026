@@ -10,15 +10,16 @@ const navData = [
     subcategories: [
       {
         title: "Visa Services",
-        links: ["Schengen Visa", "UAE Visa", "UK Visa", "USA Visa", "Canada Visa", "Australia Visa", "Saudi Visa", "Travel Insurance", "Visa Consultation"]
+        links: ["Schengen Visa", "UAE Visa", "UK Visa", "USA Visa", "Canada Visa", "Australia Visa", "Saudi Visa"]
       },
+
       {
         title: "Holiday Packages",
         links: ["Europe Tours", "Maldives Packages", "Thailand Packages", "Bali Packages", "Turkey Packages", "Georgia Packages", "Japan Packages", "Honeymoon Packages", "Luxury Tours"]
       },
       {
         title: "Flights",
-        links: ["Flight Booking", "Business Class", "Multi-City Flights", "Airport Transfers"]
+        links: []
       },
       {
         title: "Hotels",
@@ -27,6 +28,10 @@ const navData = [
       {
         title: "Dubai Experiences",
         links: ["Desert Safari", "Burj Khalifa", "Yacht Rental", "Ferrari World", "Marina Cruise", "Abu Dhabi Tours"]
+      },
+      {
+        title: "Travel Insurance",
+        links: ["Apply Online", "Request Callback"]
       }
     ]
   },
@@ -37,10 +42,6 @@ const navData = [
   {
     title: "NEWS",
     links: ["Visa Updates", "Travel News", "Destination Guides", "Travel Tips", "UAE Updates", "Schengen News", "Blog"]
-  },
-  {
-    title: "OUR COMPANIES",
-    links: ["ESHAARE Tourism", "ESHAARE Visa Services", "ESHAARE Holidays", "ESHAARE Corporate Travel", "ESHAARE Luxury Experiences", "Partner Network"]
   },
   {
     title: "ONLINE SERVICES",
@@ -55,33 +56,27 @@ const toSlug = (text: string) => {
   if (t === "Contact Us" || t === "Call Back Request" || t === "Live Chat") return "/contact";
   if (t === "Appointment Booking") return "/appointments";
   if (t === "Enquiry Form" || t === "Enquire Now" || t === "Start Your Journey" || t === "Package Customization" || t === "Flight Enquiry" || t === "Hotel Enquiry") return "/#inquiry";
-  
-  // Specific Visas
-  if (t === "Schengen Visa") return "/visa/schengen";
-  if (t === "UK Visa") return "/visa/uk";
-  if (t === "USA Visa") return "/visa/usa";
-  if (t === "Japan Visa") return "/visa/japan";
+
+  // Specific Visas redirect to the main visa page as per requirement #5
+  if (t === "Schengen Visa" || t === "UK Visa" || t === "USA Visa" || t === "Japan Visa") return "/visa";
 
   // Visa Services
   if (t === "Visa Services" || t === "Visa Consultation" || t.endsWith("Visa")) return "/visa";
-  
-  // Specific Packages
-  if (t === "Japan Packages") return "/packages/japan-tour";
-  if (t === "Thailand Packages") return "/packages/thailand-tour";
-  if (t === "Maldives Packages") return "/packages/maldives-tour";
-  if (t === "Europe Tours") return "/packages/switzerland-tour";
+
+  // Specific Packages redirect to the main packages page (/packages) as per requirement
+  if (t === "Holiday Packages" || t.endsWith("Packages") || t.endsWith("Tours") || t === "Japan Packages" || t === "Thailand Packages" || t === "Maldives Packages" || t === "Europe Tours") return "/packages";
 
   // Flights
   if (t.startsWith("Flight") || t === "Business Class" || t === "Multi-City Flights" || t === "Airport Transfers") return "/flights";
-  
+
   // Hotels
   if (t.startsWith("Hotel") || t === "Luxury Hotels" || t === "Resorts" || t === "Villas" || t === "Family Resorts") return "/hotels";
-  
+
   // Insurance
-  if (t === "Travel Insurance") return "/insurance";
+  if (t === "Travel Insurance" || t === "Apply Online" || t === "Request Callback") return "/insurance";
 
   // Dubai Experiences / Holidays / Tours
-  if (t === "Holiday Packages" || t.endsWith("Packages") || t.endsWith("Tours") || t === "Dubai Experiences" || t === "Desert Safari" || t === "Burj Khalifa" || t === "Yacht Rental" || t === "Ferrari World" || t === "Marina Cruise" || t === "Abu Dhabi Tours") return "/tours";
+  if (t === "Dubai Experiences" || t === "Desert Safari" || t === "Burj Khalifa" || t === "Yacht Rental" || t === "Ferrari World" || t === "Marina Cruise" || t === "Abu Dhabi Tours") return "/tours";
 
   // WhatsApp Support
   if (t === "WhatsApp Support") return "https://wa.me/971501234567?text=Hi ESHAARE, I need travel assistance.";
@@ -123,11 +118,10 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        scrolled
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled
           ? "bg-gray-100/95 backdrop-blur-md shadow-sm"
           : "bg-white/90 backdrop-blur-xl shadow-md border-b border-gray-100"
-      }`}
+        }`}
     >
       <div className="max-w-[95rem] mx-auto px-4 xl:px-6 h-20 flex items-center justify-between">
         {/* Logo Section */}
@@ -154,32 +148,51 @@ export default function Navbar() {
               <button className="text-gray-800 group-hover/main:text-[#e68932] transition text-[13px] xl:text-sm font-semibold uppercase tracking-wide flex items-center gap-1">
                 {navItem.title} <ChevronDown className="w-3.5 h-3.5" />
               </button>
-              
+
               {/* Dropdown Menu */}
               <div className="absolute top-[70px] left-0 w-64 bg-white border border-gray-100 shadow-xl rounded-xl opacity-0 invisible group-hover/main:opacity-100 group-hover/main:visible transition-all duration-300 py-2">
                 {navItem.subcategories ? (
                   navItem.subcategories.map((sub) => (
                     <div key={sub.title} className="relative group/sub">
-                      <div className="px-5 py-3 hover:bg-orange-50/50 hover:text-[#e68932] flex items-center justify-between text-sm font-medium text-gray-700 cursor-pointer transition-colors">
-                        {sub.title} <ChevronRight className="w-4 h-4 text-gray-400 group-hover/sub:text-[#e68932]" />
-                      </div>
-                      
-                      {/* Subcategory Dropdown */}
-                      <div className="absolute top-0 left-full -ml-1 w-60 bg-white border border-gray-100 shadow-xl rounded-xl opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-300 py-2">
-                        {sub.links.map((link) => (
-                          <Link key={link} href={toSlug(link)} className="block px-5 py-2.5 hover:bg-orange-50/50 hover:text-[#e68932] text-sm text-gray-600 transition-colors">
-                            {link}
+                      {sub.links && sub.links.length > 0 ? (
+                        <>
+                          <Link href={toSlug(sub.title)} className="px-5 py-3 hover:bg-orange-50/50 hover:text-[#e68932] flex items-center justify-between text-sm font-medium text-gray-700 cursor-pointer transition-colors">
+                            {sub.title} <ChevronRight className="w-4 h-4 text-gray-400 group-hover/sub:text-[#e68932]" />
                           </Link>
-                        ))}
-                      </div>
+
+                          {/* Subcategory Dropdown */}
+                          <div className="absolute top-0 left-full -ml-1 w-60 bg-white border border-gray-100 shadow-xl rounded-xl opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-300 py-2">
+                            {sub.links.map((link) => (
+                              <Link key={link} href={toSlug(link)} className="block px-5 py-2.5 hover:bg-orange-50/50 hover:text-[#e68932] text-sm text-gray-600 transition-colors">
+                                {link}
+                              </Link>
+                            ))}
+                          </div>
+                        </>
+                      ) : (
+                        <Link href={toSlug(sub.title)} className="block px-5 py-3 hover:bg-orange-50/50 hover:text-[#e68932] text-sm font-medium text-gray-700 transition-colors">
+                          {sub.title}
+                        </Link>
+                      )}
                     </div>
                   ))
                 ) : (
-                  navItem.links?.map((link) => (
-                    <Link key={link} href={toSlug(link)} className="block px-5 py-2.5 hover:bg-orange-50/50 hover:text-[#e68932] text-sm font-medium text-gray-700 transition-colors">
-                      {link}
-                    </Link>
-                  ))
+                  <>
+                    {navItem.links?.map((link) => (
+                      <Link key={link} href={toSlug(link)} className="block px-5 py-2.5 hover:bg-orange-50/50 hover:text-[#e68932] text-sm font-medium text-gray-700 transition-colors">
+                        {link}
+                      </Link>
+                    ))}
+                    {navItem.title === "ONLINE SERVICES" && (
+                      <Link href="/admin" className="flex items-center justify-end px-5 py-2 text-gray-300 hover:text-[#e68932] opacity-30 hover:opacity-100 transition-all border-t border-gray-50/50 mt-1" title="Admin Portal">
+                        <span className="text-[10px] uppercase font-bold tracking-widest mr-1.5">Portal</span>
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                      </Link>
+                    )}
+                  </>
                 )}
               </div>
             </div>
@@ -216,35 +229,43 @@ export default function Navbar() {
           <div className="flex flex-col p-4">
             {navData.map((navItem) => (
               <div key={navItem.title} className="border-b border-gray-50 last:border-0">
-                <button 
+                <button
                   onClick={() => toggleMobileNav(navItem.title)}
                   className="w-full py-4 flex items-center justify-between text-sm font-bold text-gray-800"
                 >
                   {navItem.title}
                   <ChevronDown className={`w-4 h-4 transition-transform ${mobileExpanded === navItem.title ? 'rotate-180' : ''}`} />
                 </button>
-                
+
                 {mobileExpanded === navItem.title && (
                   <div className="pb-3 pl-4">
                     {navItem.subcategories ? (
                       navItem.subcategories.map((sub) => (
                         <div key={sub.title} className="mt-1">
-                          <button 
-                            onClick={() => setMobileSubExpanded(mobileSubExpanded === sub.title ? null : sub.title)}
-                            className="w-full py-2.5 flex items-center justify-between text-sm font-semibold text-gray-700"
-                          >
-                            {sub.title}
-                            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${mobileSubExpanded === sub.title ? 'rotate-180' : ''}`} />
-                          </button>
-                          
-                          {mobileSubExpanded === sub.title && (
-                            <div className="pl-4 py-1 flex flex-col gap-1 border-l-2 border-gray-100 ml-2">
-                              {sub.links.map((link) => (
-                                <Link key={link} href={toSlug(link)} onClick={() => setOpen(false)} className="py-2 text-[13px] text-gray-600">
-                                  {link}
-                                </Link>
-                              ))}
-                            </div>
+                          {sub.links && sub.links.length > 0 ? (
+                            <>
+                              <button
+                                onClick={() => setMobileSubExpanded(mobileSubExpanded === sub.title ? null : sub.title)}
+                                className="w-full py-2.5 flex items-center justify-between text-sm font-semibold text-gray-700"
+                              >
+                                {sub.title}
+                                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${mobileSubExpanded === sub.title ? 'rotate-180' : ''}`} />
+                              </button>
+
+                              {mobileSubExpanded === sub.title && (
+                                <div className="pl-4 py-1 flex flex-col gap-1 border-l-2 border-gray-100 ml-2">
+                                  {sub.links.map((link) => (
+                                    <Link key={link} href={toSlug(link)} onClick={() => setOpen(false)} className="py-2 text-[13px] text-gray-600">
+                                      {link}
+                                    </Link>
+                                  ))}
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <Link href={toSlug(sub.title)} onClick={() => setOpen(false)} className="block py-2.5 text-sm font-semibold text-gray-700">
+                              {sub.title}
+                            </Link>
                           )}
                         </div>
                       ))
@@ -255,13 +276,22 @@ export default function Navbar() {
                             {link}
                           </Link>
                         ))}
+                        {navItem.title === "ONLINE SERVICES" && (
+                          <Link href="/admin" onClick={() => setOpen(false)} className="flex items-center gap-1.5 py-2.5 text-[11px] font-bold text-gray-300 hover:text-[#e68932] opacity-40 transition-all mt-1 border-t border-gray-100">
+                            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <span>ADMIN PORTAL</span>
+                          </Link>
+                        )}
                       </div>
                     )}
                   </div>
                 )}
               </div>
             ))}
-            
+
             <div className="mt-6 flex flex-col gap-3">
               <Link href="/#inquiry" className="bg-[#e68932] text-white py-3 rounded-full text-center font-semibold text-sm shadow-md"
                 onClick={() => setOpen(false)}>

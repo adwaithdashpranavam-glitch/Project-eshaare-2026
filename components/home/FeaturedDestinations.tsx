@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 const destinations = [
   {
@@ -46,9 +47,10 @@ export default function FeaturedDestinations() {
         <div className="grid md:grid-cols-3 gap-6">
 
           {destinations.map((item) => (
-            <div
+            <Link
               key={item.name}
-              className="relative h-72 overflow-hidden rounded-3xl group border border-white/10"
+              href="/packages"
+              className="relative h-72 overflow-hidden rounded-3xl group border border-white/10 block"
             >
 
               <Image
@@ -66,7 +68,7 @@ export default function FeaturedDestinations() {
                 </h3>
               </div>
 
-            </div>
+            </Link>
           ))}
 
         </div>

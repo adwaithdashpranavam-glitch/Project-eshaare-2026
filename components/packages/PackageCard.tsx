@@ -1,14 +1,16 @@
-
 import Image from "next/image";
 import Link from "next/link";
+import { Heart } from "lucide-react";
 
 import { Package } from "@/types/package";
 
 type Props = {
   item: Package;
+  isLiked?: boolean;
+  onLikeToggle?: (e: React.MouseEvent) => void;
 };
 
-export default function PackageCard({ item }: Props) {
+export default function PackageCard({ item, isLiked = false, onLikeToggle }: Props) {
   return (
     <Link
       href={`/packages/${item.slug}`}
@@ -33,9 +35,26 @@ export default function PackageCard({ item }: Props) {
             {item.category}
           </div>
 
+          {/* LIKE BUTTON */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (onLikeToggle) {
+                onLikeToggle(e);
+              }
+            }}
+            className="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 backdrop-blur-md text-white border border-white/10 hover:bg-[#ff4d6d] hover:text-white hover:border-[#ff4d6d] transition duration-300"
+          >
+            <Heart
+              size={16}
+              className={isLiked ? "fill-[#ff4d6d] text-[#ff4d6d]" : "text-white"}
+            />
+          </button>
+
           {/* OFFER BADGE */}
           {item.offerText && (
-            <div className="absolute top-4 right-4 rounded-full bg-red-500 px-3 py-1 text-xs font-bold text-white shadow-lg">
+            <div className="absolute top-4 right-16 rounded-full bg-red-500 px-3 py-1 text-xs font-bold text-white shadow-lg">
               {item.offerText}
             </div>
           )}
@@ -109,3 +128,4 @@ export default function PackageCard({ item }: Props) {
     </Link>
   );
 }
+

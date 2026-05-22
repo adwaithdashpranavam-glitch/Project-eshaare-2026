@@ -207,9 +207,15 @@ export default function LeadDetailsPage({
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
-                    const data = docSnap.data() as Lead;
-                    setLead(data);
-                    setFormData(data);
+                    const data = docSnap.data() as any;
+                    const parsedLead: Lead = {
+                        ...data,
+                        visaType: data.visaType || data.serviceType || "",
+                        travelDate: data.travelDate || data.appointmentDate || "",
+                        revenue: Number(data.revenue) || 0,
+                    };
+                    setLead(parsedLead);
+                    setFormData(parsedLead);
                 }
             } catch (error) {
                 console.log(error);

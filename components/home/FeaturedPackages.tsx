@@ -12,6 +12,7 @@ import {
 
 import { db } from "@/lib/firebase";
 import { Package } from "@/types/package";
+import { packages as fallbackPackages } from "@/data/packages";
 
 export default function FeaturedPackages() {
   const [tourPackages, setTourPackages] = useState<Package[]>([]);
@@ -32,9 +33,14 @@ export default function FeaturedPackages() {
         // Filter for active and featured packages
         packagesData = packagesData.filter(pkg => pkg.active === true && pkg.featured === true);
 
-        setTourPackages(packagesData);
+        if (packagesData.length === 0) {
+          setTourPackages(fallbackPackages as Package[]);
+        } else {
+          setTourPackages(packagesData);
+        }
       } catch (error) {
-        console.error("Firebase package fetch error:", error);
+        console.error("Firebase package fetch error, using fallback packages:", error);
+        setTourPackages(fallbackPackages as Package[]);
       } finally {
         setLoading(false);
       }
@@ -59,7 +65,7 @@ export default function FeaturedPackages() {
           </div>
 
           <Link
-            href="/tours"
+            href="/packages"
             className="hidden md:flex items-center gap-2 bg-gradient-to-r from-[#d49237] to-[#f4d06f] hover:scale-105 transition-all duration-300 text-[#071120] px-6 py-3 rounded-full font-semibold shadow-lg shadow-[#d4af37]/20"
           >
             View More
@@ -72,15 +78,15 @@ export default function FeaturedPackages() {
                 <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#e68932] border-t-transparent"></div>
             </div>
         ) : tourPackages.length === 0 ? (
-          <p className="text-gray-500 py-10">
-            No featured active packages found. Please add featured packages from the admin panel.
+          <p className="text-gray-500 py-10 text-center">
+            No featured active packages found.
           </p>
         ) : (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {tourPackages.map((tour) => (
                 <Link
                 key={tour.id}
-                href={`/packages/${tour.slug}`}
+                href="/packages"
                 className="group relative overflow-hidden rounded-[26px] shadow-xl"
                 >
                 <div className="relative h-[360px] w-full overflow-hidden">
@@ -111,7 +117,7 @@ export default function FeaturedPackages() {
 
         <div className="mt-10 flex justify-center md:hidden">
           <Link
-            href="/tours"
+            href="/packages"
             className="flex items-center gap-2 rounded-full bg-[#e68932] px-6 py-3 text-sm font-semibold text-white shadow-lg"
           >
             View More
@@ -122,4 +128,4 @@ export default function FeaturedPackages() {
       </div>
     </section>
   );
-}
+}

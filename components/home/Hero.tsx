@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import "@fontsource/pinyon-script";
 
 const slides = [
@@ -59,6 +60,7 @@ export default function Hero() {
     videoRefs.current.forEach((video, index) => {
       if (video) {
         if (index === currentSlide) {
+          video.load();
           video.currentTime = 0;
           video.play().catch((err) => console.log(err));
         } else {
@@ -69,77 +71,74 @@ export default function Hero() {
   }, [currentSlide]);
 
   return (
-    <section className="min-h-screen bg-[#f5f5f5] px-4 pt-20 pb-6 md:px-8">
-       <div className="mx-auto max-w-[95%]">
+    <section className="relative w-full h-screen bg-[#071120] overflow-hidden">
+      {/* VIDEOS */}
+      <div className="absolute inset-0 overflow-hidden">
+        {slides.map((slide, index) => {
+          const isCurrent = index === currentSlide;
+          const isNext = index === (currentSlide + 1) % slides.length;
+          const shouldPreload = isCurrent || isNext;
 
-        {/* HERO CARD */}
-        <div className="relative mt-6 h-[72vh] overflow-visible rounded-[40px] shadow-2xl">
+          return (
+            <video
+              key={slide.id}
+              ref={(el) => {
+                videoRefs.current[index] = el;
+              }}
+              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+                isCurrent ? "opacity-100" : "opacity-0"
+              }`}
+              loop
+              muted
+              playsInline
+              preload={shouldPreload ? "auto" : "none"}
+            >
+              {shouldPreload && <source src={slide.video} type="video/mp4" />}
+            </video>
+          );
+        })}
+      </div>
 
-          {/* VIDEOS */}
-          <div className="absolute inset-0 overflow-hidden rounded-[40px]">
-            {slides.map((slide, index) => (
-              <video
-                key={slide.id}
-                ref={(el) => {
-                  videoRefs.current[index] = el;
-                }}
-                className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
-                  index === currentSlide ? "opacity-100" : "opacity-0"
-                }`}
-                loop
-                muted
-                playsInline
-                autoPlay={index === 0}
-              >
-                <source src={slide.video} type="video/mp4" />
-              </video>
-            ))}
-          </div>
+      {/* OVERLAY */}
+      <div className="absolute inset-0 bg-black/45" />
 
-          {/* OVERLAY */}
-          <div className="absolute inset-0 rounded-[40px] bg-black/35" />
+      {/* CONTENT */}
+      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center">
 
-          {/* CONTENT */}
-          <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentSlide}
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            {/* TITLE */}
+            <h1 className="text-5xl font-extrabold tracking-tight text-white md:text-7xl lg:text-8xl">
+              {slides[currentSlide].title}
+            </h1>
 
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentSlide}
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                {/* TITLE */}
-                <h1 className="text-5xl font-extrabold tracking-tight text-white md:text-7xl lg:text-8xl">
-                  {slides[currentSlide].title}
-                </h1>
+            {/* SUBTITLE */}
+            <p
+              className="mt-6 text-4xl text-white/95 md:text-5xl"
+              style={{
+                fontFamily: "'Pinyon Script', cursive",
+              }}
+            >
+              Explore the world with Eshaare Tour
+            </p>
+          </motion.div>
+        </AnimatePresence>
 
-                {/* SUBTITLE */}
-                <p
-                  className="mt-6 text-4xl text-white/95 md:text-5xl"
-                  style={{
-                    fontFamily: "'Pinyon Script', cursive",
-                  }}
-                >
-                  Explore the world with Eshaare Tour
-                </p>
-              </motion.div>
-            </AnimatePresence>
-
-            {/* BUTTON */}
-            <div className="mt-10">
-              <button className="rounded-full border border-white/30 bg-white/10 px-10 py-4 text-lg font-semibold text-white backdrop-blur-md transition hover:bg-white hover:text-black">
-                Discover Now
-              </button>
-            </div>
-
-
-
-          </div>
+        {/* BUTTON */}
+        <div className="mt-10">
+          <Link href="/packages">
+            <button className="rounded-full border border-white/30 bg-white/10 px-10 py-4 text-lg font-semibold text-white backdrop-blur-md transition hover:bg-white hover:text-black">
+              Discover Now
+            </button>
+          </Link>
         </div>
 
-     
       </div>
     </section>
   );

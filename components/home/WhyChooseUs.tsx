@@ -1,19 +1,19 @@
 const items = [
   {
     title: "Fast Visa Processing",
-    image: "/images/visa.jpg",
+    image: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=600&q=80",
   },
   {
     title: "Luxury Travel Support",
-    image: "/images/luxury.jpg",
+    image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80",
   },
   {
     title: "Trusted Worldwide",
-    image: "/images/world.jpg",
+    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80",
   },
   {
     title: "Expert Consultation",
-    image: "/images/consultation.jpg",
+    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=600&q=80",
   },
 ];
 

@@ -1,7 +1,8 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import VisaCTA from "@/components/visa/VisaCTA";
 
-export default function JapanVisaPage() {
+export default function UKVisaPage() {
   return (
     <main className="bg-[#071120] text-white">
 
@@ -10,17 +11,15 @@ export default function JapanVisaPage() {
       <section className="mx-auto max-w-5xl px-6 pb-24 pt-36">
 
         <p className="uppercase tracking-[4px] text-[#FF9F1C]">
-          Japan Visa
+          UK Visa
         </p>
 
         <h1 className="mt-4 text-5xl font-bold">
-          Japan Visa From UAE
+          UK Visa From UAE
         </h1>
 
         <p className="mt-6 leading-8 text-gray-300">
-          Get professional Japan visa assistance with
-          document verification, application support,
-          appointment guidance, and fast processing.
+          Get professional UK visa assistance (Standard Visitor and other visitor categories) with comprehensive document compilation, online application form completion, appointment booking support, and eligibility reviews.
         </p>
 
         {/* REQUIREMENTS */}
@@ -32,11 +31,11 @@ export default function JapanVisaPage() {
 
           <ul className="mt-8 space-y-4 text-gray-300">
 
-            <li>• Passport copy</li>
-            <li>• Emirates ID copy</li>
-            <li>• Bank statement</li>
-            <li>• Passport size photo</li>
-            <li>• NOC letter</li>
+            <li>• Original passport (valid for at least 6 months)</li>
+            <li>• UAE Residence Visa copy & Emirates ID copy</li>
+            <li>• 3-6 months official personal bank statements showing sufficient funds</li>
+            <li>• No Objection Certificate (NOC) from employer detailing salary & role</li>
+            <li>• Proposed travel itinerary & hotel reservations</li>
 
           </ul>
 
@@ -50,19 +49,16 @@ export default function JapanVisaPage() {
           </h2>
 
           <p className="mt-6 text-gray-300">
-            7–10 working days depending on embassy approval.
+            Standard processing takes approximately 15-20 working days. Priority service (5 working days) is available upon payment of additional embassy fees.
           </p>
 
         </div>
 
         {/* CTA */}
-        <div className="mt-12">
-
-          <button className="rounded-full bg-[#FF9F1C] px-8 py-4 text-lg font-semibold text-black transition hover:bg-[#F48C06]">
-            Apply Via WhatsApp
-          </button>
-
-        </div>
+        <VisaCTA
+          country="UK"
+          whatsappUrl="https://wa.me/971501234567?text=Hi%20Eshaare%2C%20I%20want%20to%20apply%20for%20a%20UK%20Visa%20from%20UAE."
+        />
 
       </section>
 

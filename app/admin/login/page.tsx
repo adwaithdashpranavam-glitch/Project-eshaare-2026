@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { useRouter } from "next/navigation";
 
 import {
     signInWithEmailAndPassword,
+    signOut,
 } from "firebase/auth";
 
 import {
@@ -14,6 +15,13 @@ import {
 
 export default function AdminLoginPage() {
     const router = useRouter();
+
+    useEffect(() => {
+        // Automatically sign out any existing session on mount so that the user sees a fresh login page
+        signOut(auth).catch((err) => {
+            console.error("Error signing out existing session on mount:", err);
+        });
+    }, []);
 
     const [email, setEmail] = useState("");
 

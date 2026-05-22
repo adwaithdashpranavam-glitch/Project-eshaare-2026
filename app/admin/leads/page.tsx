@@ -44,17 +44,30 @@ export default function LeadsPage() {
     useEffect(() => {
         const fetchLeads = async () => {
             try {
-                const q = query(
-                    collection(db, "leads"),
-                    orderBy("createdAt", "desc")
-                );
-
+                // Remove orderBy to avoid index requirement failure
+                const q = query(collection(db, "leads"));
                 const querySnapshot = await getDocs(q);
 
                 const leadsData: Lead[] = [];
 
                 querySnapshot.forEach((docItem) => {
                     const data = docItem.data();
+
+                    // Parse createdAt safely
+                    let createdAtDate = new Date();
+                    if (data.createdAt) {
+                        try {
+                            if (typeof data.createdAt.toDate === "function") {
+                                createdAtDate = data.createdAt.toDate();
+                            } else if (data.createdAt.seconds) {
+                                createdAtDate = new Date(data.createdAt.seconds * 1000);
+                            } else {
+                                createdAtDate = new Date(data.createdAt);
+                            }
+                        } catch (e) {
+                            console.error("Error parsing lead createdAt:", e);
+                        }
+                    }
 
                     leadsData.push({
                         id: docItem.id,
@@ -66,9 +79,9 @@ export default function LeadsPage() {
                         currentCountry: data.currentCountry || "",
                         passport: data.passport || "",
                         source: data.source || "",
-                        visaType: data.visaType || "",
+                        visaType: data.visaType || data.serviceType || "",
                         destination: data.destination || "",
-                        travelDate: data.travelDate || "",
+                        travelDate: data.travelDate || data.appointmentDate || "",
                         travelers: data.travelers || "",
                         budget: data.budget || "",
                         travelHistory: data.travelHistory || "",
@@ -77,8 +90,15 @@ export default function LeadsPage() {
                         status: data.status || "New",
                         assignedTo: data.assignedTo || "",
                         revenue: Number(data.revenue) || 0,
-                        createdAt: data.createdAt?.toDate() || new Date(),
+                        createdAt: createdAtDate,
                     });
+                });
+
+                // Client-side sorting (newest first) with NaN date safety
+                leadsData.sort((a, b) => {
+                    const timeA = a.createdAt instanceof Date && !isNaN(a.createdAt.getTime()) ? a.createdAt.getTime() : 0;
+                    const timeB = b.createdAt instanceof Date && !isNaN(b.createdAt.getTime()) ? b.createdAt.getTime() : 0;
+                    return timeB - timeA;
                 });
 
                 setLeads(leadsData);

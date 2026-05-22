@@ -19,44 +19,67 @@ export default function AdminDashboardPage() {
 
     useEffect(() => {
         const fetchAnalytics = async () => {
+            let totalPkgs = 0;
+            let activePkgs = 0;
+            let featuredPkgs = 0;
+            let totalLeadsCount = 0;
+            let newLeadsCount = 0;
+            let totalAppts = 0;
+            let totalVisasCount = 0;
+
+            // Fetch Packages
             try {
-                // Fetch Packages
                 const packagesSnap = await getDocs(collection(db, "packages"));
-                let activePkgs = 0;
-                let featuredPkgs = 0;
+                totalPkgs = packagesSnap.size;
                 packagesSnap.forEach((doc) => {
                     const data = doc.data();
                     if (data.active) activePkgs++;
                     if (data.featured) featuredPkgs++;
                 });
+            } catch (error) {
+                console.error("Error fetching packages for dashboard metrics:", error);
+            }
 
-                // Fetch Leads
+            // Fetch Leads
+            try {
                 const leadsSnap = await getDocs(collection(db, "leads"));
-                let newLeadsCount = 0;
+                totalLeadsCount = leadsSnap.size;
                 leadsSnap.forEach((doc) => {
-                    if (doc.data().status === "new") newLeadsCount++;
-                });
-
-                // Fetch Appointments
-                const apptsSnap = await getDocs(collection(db, "appointments"));
-
-                // Fetch Visa Applications
-                const visasSnap = await getDocs(collection(db, "visaApplications"));
-
-                setStats({
-                    totalPackages: packagesSnap.size,
-                    activePackages: activePkgs,
-                    featuredPackages: featuredPkgs,
-                    totalLeads: leadsSnap.size,
-                    newLeads: newLeadsCount,
-                    totalAppointments: apptsSnap.size,
-                    totalVisas: visasSnap.size
+                    const statusVal = doc.data().status;
+                    if (statusVal && typeof statusVal === "string" && statusVal.toLowerCase() === "new") {
+                        newLeadsCount++;
+                    }
                 });
             } catch (error) {
-                console.log(error);
-            } finally {
-                setLoading(false);
+                console.error("Error fetching leads for dashboard metrics:", error);
             }
+
+            // Fetch Appointments
+            try {
+                const apptsSnap = await getDocs(collection(db, "appointments"));
+                totalAppts = apptsSnap.size;
+            } catch (error) {
+                console.error("Error fetching appointments for dashboard metrics:", error);
+            }
+
+            // Fetch Visa Applications
+            try {
+                const visasSnap = await getDocs(collection(db, "visaApplications"));
+                totalVisasCount = visasSnap.size;
+            } catch (error) {
+                console.error("Error fetching visaApplications for dashboard metrics:", error);
+            }
+
+            setStats({
+                totalPackages: totalPkgs,
+                activePackages: activePkgs,
+                featuredPackages: featuredPkgs,
+                totalLeads: totalLeadsCount,
+                newLeads: newLeadsCount,
+                totalAppointments: totalAppts,
+                totalVisas: totalVisasCount
+            });
+            setLoading(false);
         };
 
         fetchAnalytics();
