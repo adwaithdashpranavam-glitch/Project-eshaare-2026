@@ -71,166 +71,87 @@ export default function PackageSlider() {
 
         {/* SLIDER */}
         <div className="relative overflow-hidden w-full">
-          <div className="flex w-max animate-scroll hover:[animation-play-state:paused]">
-            {/* First Set */}
-            <div className="flex gap-6 pr-6 shrink-0">
-              {packages.map((item, index) => (
-                <div
-                  key={`set1-${index}`}
-                  className="
-                    w-[260px]
-                    md:w-[320px]
-                    rounded-[30px]
-                    overflow-hidden
-                    relative
-                    group
-                    bg-white
-                    border border-gray-200
-                    hover:border-[#d4af37]/40
-                    transition-all duration-500
-                    hover:-translate-y-2
-                    flex-shrink-0
-                    shadow-sm
-                    hover:shadow-2xl
-                  "
-                >
-                  {/* IMAGE */}
-                  <div className="relative h-[220px] overflow-hidden">
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      fill
-                      className="
-                        object-cover
-                        group-hover:scale-110
-                        transition-transform duration-700
-                      "
-                    />
+          <div className="flex w-max animate-scroll-quarter hover:[animation-play-state:paused]">
+            {Array.from({ length: 4 }).map((_, setIdx) => (
+              <div key={`set-${setIdx}`} className="flex gap-6 pr-6 shrink-0">
+                {packages.map((item, index) => (
+                  <div
+                    key={`item-${setIdx}-${index}`}
+                    className="
+                      w-[260px]
+                      md:w-[320px]
+                      rounded-[30px]
+                      overflow-hidden
+                      relative
+                      group
+                      bg-white
+                      border border-gray-200
+                      hover:border-[#d4af37]/40
+                      transition-all duration-500
+                      hover:-translate-y-2
+                      flex-shrink-0
+                      shadow-sm
+                      hover:shadow-2xl
+                    "
+                  >
+                    {/* IMAGE */}
+                    <div className="relative h-[220px] overflow-hidden">
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        className="
+                          object-cover
+                          group-hover:scale-110
+                          transition-transform duration-700
+                        "
+                      />
 
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#071120] via-black/20 to-transparent" />
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#071120] via-black/20 to-transparent" />
 
-                    {/* Title */}
-                    <div className="absolute bottom-5 left-5">
-                      <h3 className="text-3xl font-bold text-white">
-                        {item.title}
-                      </h3>
+                      {/* Title */}
+                      <div className="absolute bottom-5 left-5">
+                        <h3 className="text-3xl font-bold text-white">
+                          {item.title}
+                        </h3>
 
-                      <p className="text-white/80 text-sm mt-1">
-                        {item.type}
+                        <p className="text-white/80 text-sm mt-1">
+                          {item.type}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* CONTENT */}
+                    <div className="p-6">
+                      <p className="text-gray-600 leading-relaxed text-sm">
+                        Get hassle-free and quick visa processing for your travel to {item.title}.
                       </p>
+
+                      <Link
+                        href="/visa"
+                        className="
+                          mt-6 w-full text-center block
+                          bg-gradient-to-r
+                          from-[#d49237]
+                          via-[#f4d06f]
+                          to-[#d4af37]
+                          text-[#071120]
+                          py-3.5
+                          rounded-2xl
+                          font-semibold
+                          hover:scale-[1.02]
+                          transition-all duration-300
+                          shadow-lg shadow-[#d4af37]/20
+                        "
+                      >
+                        Apply for Visa
+                      </Link>
                     </div>
                   </div>
-
-                  {/* CONTENT */}
-                  <div className="p-6">
-                    <p className="text-gray-600 leading-relaxed text-sm">
-                      Get hassle-free and quick visa processing for your travel to {item.title}.
-                    </p>
-
-                    <Link
-                      href="/visa"
-                      className="
-                        mt-6 w-full text-center block
-                        bg-gradient-to-r
-                        from-[#d49237]
-                        via-[#f4d06f]
-                        to-[#d4af37]
-                        text-[#071120]
-                        py-3.5
-                        rounded-2xl
-                        font-semibold
-                        hover:scale-[1.02]
-                        transition-all duration-300
-                        shadow-lg shadow-[#d4af37]/20
-                      "
-                    >
-                      Apply for Visa
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Second Set (Identical Duplicate) */}
-            <div className="flex gap-6 pr-6 shrink-0">
-              {packages.map((item, index) => (
-                <div
-                  key={`set2-${index}`}
-                  className="
-                    w-[260px]
-                    md:w-[320px]
-                    rounded-[30px]
-                    overflow-hidden
-                    relative
-                    group
-                    bg-white
-                    border border-gray-200
-                    hover:border-[#d4af37]/40
-                    transition-all duration-500
-                    hover:-translate-y-2
-                    flex-shrink-0
-                    shadow-sm
-                    hover:shadow-2xl
-                  "
-                >
-                  {/* IMAGE */}
-                  <div className="relative h-[220px] overflow-hidden">
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      fill
-                      className="
-                        object-cover
-                        group-hover:scale-110
-                        transition-transform duration-700
-                      "
-                    />
-
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#071120] via-black/20 to-transparent" />
-
-                    {/* Title */}
-                    <div className="absolute bottom-5 left-5">
-                      <h3 className="text-3xl font-bold text-white">
-                        {item.title}
-                      </h3>
-
-                      <p className="text-white/80 text-sm mt-1">
-                        {item.type}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* CONTENT */}
-                  <div className="p-6">
-                    <p className="text-gray-600 leading-relaxed text-sm">
-                      Get hassle-free and quick visa processing for your travel to {item.title}.
-                    </p>
-
-                    <Link
-                      href="/visa"
-                      className="
-                        mt-6 w-full text-center block
-                        bg-gradient-to-r
-                        from-[#d49237]
-                        via-[#f4d06f]
-                        to-[#d4af37]
-                        text-[#071120]
-                        py-3.5
-                        rounded-2xl
-                        font-semibold
-                        hover:scale-[1.02]
-                        transition-all duration-300
-                        shadow-lg shadow-[#d4af37]/20
-                      "
-                    >
-                      Apply for Visa
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ))}
           </div>
         </div>
 

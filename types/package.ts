@@ -18,4 +18,5 @@ export type Package = {
     itinerary?: string[];
     inclusions?: string[];
     exclusions?: string[];
+    supplier?: string;
 };

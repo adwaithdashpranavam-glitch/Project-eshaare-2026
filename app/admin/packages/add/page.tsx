@@ -34,6 +34,7 @@ export default function AddPackagePage() {
         itinerary: "",
         inclusions: "",
         exclusions: "",
+        supplier: "",
     });
 
     function handleChange(
@@ -90,6 +91,7 @@ export default function AddPackagePage() {
                     offerText: form.offerText,
                     seasonTag: form.seasonTag,
                     overview: form.overview,
+                    supplier: form.supplier,
 
                     gallery: form.gallery
                         .split(",")
@@ -216,6 +218,14 @@ export default function AddPackagePage() {
                     value={form.seasonTag}
                     onChange={handleChange}
                     placeholder="Season Tag"
+                    className="rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white"
+                />
+
+                <input
+                    name="supplier"
+                    value={form.supplier}
+                    onChange={handleChange}
+                    placeholder="Supplier Name"
                     className="rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white"
                 />
 

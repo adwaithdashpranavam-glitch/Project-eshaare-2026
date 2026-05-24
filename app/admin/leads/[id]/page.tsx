@@ -46,6 +46,7 @@ type Lead = {
     status: string;
     assignedTo: string;
     revenue: number;
+    supplier?: string;
     notes?: Note[];
 };
 
@@ -213,6 +214,7 @@ export default function LeadDetailsPage({
                         visaType: data.visaType || data.serviceType || "",
                         travelDate: data.travelDate || data.appointmentDate || "",
                         revenue: Number(data.revenue) || 0,
+                        supplier: data.supplier || "",
                     };
                     setLead(parsedLead);
                     setFormData(parsedLead);
@@ -475,13 +477,23 @@ export default function LeadDetailsPage({
                                     )}
                                 </div>
                             </div>
-                            <div>
-                                <label className="text-sm text-gray-500">Budget</label>
-                                {editMode ? (
-                                    <input type="text" name="budget" value={formData.budget || ""} onChange={handleChange} className="w-full rounded-lg border p-2" />
-                                ) : (
-                                    <p className="font-medium text-gray-500">{lead.budget || "N/A"}</p>
-                                )}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-sm text-gray-500">Budget</label>
+                                    {editMode ? (
+                                        <input type="text" name="budget" value={formData.budget || ""} onChange={handleChange} className="w-full rounded-lg border p-2" />
+                                    ) : (
+                                        <p className="font-medium text-gray-500">{lead.budget || "N/A"}</p>
+                                    )}
+                                </div>
+                                <div>
+                                    <label className="text-sm text-gray-500">Supplier</label>
+                                    {editMode ? (
+                                        <input type="text" name="supplier" value={formData.supplier || ""} onChange={handleChange} className="w-full rounded-lg border p-2" />
+                                    ) : (
+                                        <p className="font-medium text-gray-500">{lead.supplier || "N/A"}</p>
+                                    )}
+                                </div>
                             </div>
                             <div>
                                 <label className="text-sm text-gray-500">Travel History</label>

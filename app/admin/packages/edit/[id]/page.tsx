@@ -28,6 +28,7 @@ export default function EditPackagePage() {
         offerText: "",
         seasonTag: "",
         overview: "",
+        supplier: "",
     });
 
     useEffect(() => {
@@ -60,6 +61,7 @@ export default function EditPackagePage() {
                 offerText: data.offerText || "",
                 seasonTag: data.seasonTag || "",
                 overview: data.overview || "",
+                supplier: data.supplier || "",
             });
 
             setLoading(false);
@@ -135,6 +137,8 @@ export default function EditPackagePage() {
                 <input name="offerText" value={form.offerText} onChange={handleChange} placeholder="Offer Text" className="rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white" />
 
                 <input name="seasonTag" value={form.seasonTag} onChange={handleChange} placeholder="Season Tag" className="rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white" />
+
+                <input name="supplier" value={form.supplier} onChange={handleChange} placeholder="Supplier Name" className="rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white" />
 
                 <input name="seatsLeft" value={form.seatsLeft} onChange={handleChange} type="number" placeholder="Seats Left" className="rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white" />
 

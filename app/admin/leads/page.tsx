@@ -34,6 +34,7 @@ type Lead = {
     status: string;
     assignedTo: string;
     revenue: number;
+    supplier?: string;
     createdAt?: any;
 };
 
@@ -90,6 +91,7 @@ export default function LeadsPage() {
                         status: data.status || "New",
                         assignedTo: data.assignedTo || "",
                         revenue: Number(data.revenue) || 0,
+                        supplier: data.supplier || "",
                         createdAt: createdAtDate,
                     });
                 });
@@ -228,6 +230,7 @@ export default function LeadsPage() {
                                 <th className="px-6 py-5 text-left text-sm font-semibold">Customer</th>
                                 <th className="px-6 py-5 text-left text-sm font-semibold">Contact Info</th>
                                 <th className="px-6 py-5 text-left text-sm font-semibold">Inquiry Details</th>
+                                <th className="px-6 py-5 text-left text-sm font-semibold">Supplier</th>
                                 <th className="px-6 py-5 text-left text-sm font-semibold">Assigned To</th>
                                 <th className="px-6 py-5 text-left text-sm font-semibold">Status</th>
                             </tr>
@@ -235,11 +238,11 @@ export default function LeadsPage() {
                         <tbody>
                             {loading ? (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-16 text-center text-lg text-gray-500">Loading Leads...</td>
+                                    <td colSpan={6} className="px-6 py-16 text-center text-lg text-gray-500">Loading Leads...</td>
                                 </tr>
                             ) : leads.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-16 text-center text-lg text-gray-500">No Leads Found</td>
+                                    <td colSpan={6} className="px-6 py-16 text-center text-lg text-gray-500">No Leads Found</td>
                                 </tr>
                             ) : (
                                 leads.map((lead, index) => (
@@ -264,6 +267,9 @@ export default function LeadsPage() {
                                                 </span>
                                                 <span className="text-xs text-gray-500">{lead.visaType || "General"}</span>
                                             </div>
+                                        </td>
+                                        <td className="px-6 py-6 text-sm text-gray-700">
+                                            {lead.supplier || "N/A"}
                                         </td>
                                         <td className="px-6 py-6 text-sm text-gray-700">
                                             {lead.assignedTo || "Unassigned"}

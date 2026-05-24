@@ -107,14 +107,24 @@
 .animate-scroll {
   animation: scroll 30s linear infinite;
 }
+
+@keyframes scroll-quarter {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-25%);
+  }
+}
+
+.animate-scroll-quarter {
+  animation: scroll-quarter 30s linear infinite;
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
     outline-color: color-mix(in oklab, var(--color-ring) 50%, transparent);
-  }
-
-  html {
-    scroll-behavior: smooth;
   }
 
   body {

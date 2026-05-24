@@ -103,6 +103,12 @@ export default function PackagesPage() {
                                     {item.destination} • AED {item.price} • {item.duration}
                                 </p>
 
+                                {item.supplier && (
+                                    <p className="mt-1 text-xs text-[#e68932] font-semibold bg-white/5 border border-white/10 rounded-lg px-2.5 py-1 w-fit">
+                                        Supplier: {item.supplier}
+                                    </p>
+                                )}
+
                                 <div className="mt-3 flex flex-wrap gap-2">
                                     <span
                                         className={`rounded-full px-3 py-1 text-sm ${item.active

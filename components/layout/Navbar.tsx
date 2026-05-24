@@ -1,8 +1,9 @@
 "use client";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
-import { Menu, X, MapPin, Phone, ChevronDown, ChevronRight } from "lucide-react";
+import { Menu, X, MapPin, Phone, ChevronDown, ChevronRight, ArrowLeft } from "lucide-react";
 
 const navData = [
   {
@@ -91,6 +92,8 @@ const toSlug = (text: string) => {
 };
 
 export default function Navbar() {
+  const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
@@ -124,22 +127,33 @@ export default function Navbar() {
         }`}
     >
       <div className="max-w-[95rem] mx-auto px-4 xl:px-6 h-20 flex items-center justify-between">
-        {/* Logo Section */}
-        <Link href="/" className="flex items-center gap-2 group shrink-0">
-          <div className="relative">
-            <MapPin className="h-6 w-6 text-[#21201e]" />
-            <div className="absolute -top-1 -right-2 w-2 h-2 bg-[#0c0c0b] rounded-full animate-pulse" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">
-              <span className="text-[#e68932]">ESHAARE</span>
-              <span className="text-[#141312]">TOUR</span>
-            </h1>
-            <p className="text-[12px] tracking-wider text-gray-800 font-semibold -mt-1">
-              TOURS & EVENTS
-            </p>
-          </div>
-        </Link>
+        {/* Logo & Back Button Section */}
+        <div className="flex items-center gap-3">
+          {pathname && pathname !== "/" && pathname !== "/home" && (
+            <button
+              onClick={() => router.back()}
+              className="mr-1 flex items-center justify-center p-2 rounded-full hover:bg-gray-200/50 text-gray-800 transition-colors"
+              title="Go Back"
+            >
+              <ArrowLeft className="w-5 h-5 stroke-[2.5]" />
+            </button>
+          )}
+          <Link href="/" className="flex items-center gap-2 group shrink-0">
+            <div className="relative">
+              <MapPin className="h-6 w-6 text-[#21201e]" />
+              <div className="absolute -top-1 -right-2 w-2 h-2 bg-[#0c0c0b] rounded-full animate-pulse" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">
+                <span className="text-[#e68932]">ESHAARE</span>
+                <span className="text-[#141312]">TOUR</span>
+              </h1>
+              <p className="text-[12px] tracking-wider text-gray-800 font-semibold -mt-1">
+                TOURS & EVENTS
+              </p>
+            </div>
+          </Link>
+        </div>
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-6 xl:gap-8 ml-8">
