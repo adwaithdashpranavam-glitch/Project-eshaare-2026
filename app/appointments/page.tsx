@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
@@ -51,8 +50,7 @@ export default function AppointmentsPage() {
 
     return (
         <main className="bg-[#071120] text-white min-h-screen">
-            <Navbar />
-            <section className="max-w-4xl mx-auto px-6 py-24">
+                        <section className="max-w-4xl mx-auto px-6 py-24">
                 <div className="text-center mb-12">
                     <p className="uppercase tracking-[4px] text-[#e68932]">Consultation</p>
                     <h1 className="mt-4 text-5xl font-bold text-white">Book an Appointment</h1>

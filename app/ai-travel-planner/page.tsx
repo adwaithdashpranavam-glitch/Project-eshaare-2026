@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
 export default function AiTravelPlannerPage() {
@@ -45,8 +44,7 @@ export default function AiTravelPlannerPage() {
 
     return (
         <main className="bg-[#071120] text-white min-h-screen">
-            <Navbar />
-
+            
             {/* HERO */}
             <section className="pt-32 pb-16 px-6 text-center max-w-4xl mx-auto">
                 <p className="uppercase tracking-[4px] text-[#00C2FF] font-semibold text-sm">Powered by AI</p>

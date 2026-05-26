@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const items = [
   {
     title: "Fast Visa Processing",
@@ -58,12 +60,12 @@ export default function WhyChooseUs() {
             >
 
               {/* IMAGE */}
-              <img
+              <Image
                 src={item.image}
                 alt={item.title}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                 className="
-                  h-full
-                  w-full
                   object-cover
                   transition
                   duration-700

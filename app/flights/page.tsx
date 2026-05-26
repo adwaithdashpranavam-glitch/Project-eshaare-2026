@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Plane, CheckCircle, Loader2, MapPin } from "lucide-react";
 import { db } from "@/lib/firebase";
@@ -76,8 +75,7 @@ export default function FlightsPage() {
 
   return (
     <main className="bg-[#071120] text-white min-h-screen flex flex-col justify-between">
-      <Navbar />
-
+      
       <section className="relative flex-1 flex items-center justify-center pt-36 pb-24 px-6 overflow-hidden bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-950/20 via-[#071120] to-[#071120]">
 
         {/* Glow Effects */}

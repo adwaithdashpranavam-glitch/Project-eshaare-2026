@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { MapPin, Calendar, Users, Star, ArrowRight, MessageSquare, Phone, X, CheckCircle, Loader2 } from "lucide-react";
 import { db } from "@/lib/firebase";
@@ -158,8 +157,7 @@ export default function HotelsPage() {
 
   return (
     <main className="bg-[#071120] text-white min-h-screen">
-      <Navbar />
-
+      
       {/* HERO SECTION */}
       <section className="relative pt-32 pb-16 px-6 bg-gradient-to-b from-[#0b1830] to-[#071120]">
         <div className="max-w-7xl mx-auto text-center">

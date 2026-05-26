@@ -1,4 +1,3 @@
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import VisaCTA from "@/components/visa/VisaCTA";
 
@@ -6,8 +5,7 @@ export default function USAVisaPage() {
   return (
     <main className="bg-[#071120] text-white">
 
-      <Navbar />
-
+      
       <section className="mx-auto max-w-5xl px-6 pb-24 pt-36">
 
         <p className="uppercase tracking-[4px] text-[#FF9F1C]">

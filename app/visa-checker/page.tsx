@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
 export default function VisaCheckerPage() {
@@ -61,8 +60,7 @@ export default function VisaCheckerPage() {
 
     return (
         <main className="bg-[#071120] text-white min-h-screen">
-            <Navbar />
-
+            
             <section className="max-w-7xl mx-auto px-6 py-24 grid lg:grid-cols-2 gap-16">
                 
                 {/* FORM SIDE */}

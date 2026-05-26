@@ -21,17 +21,15 @@ export default function AdminLayout({
     children: React.ReactNode;
 }) {
     const [loading, setLoading] = useState(true);
+    const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
     const router = useRouter();
     const pathname = usePathname();
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                if (pathname !== "/admin/login") {
-                    router.push("/admin/login");
-                } else {
-                    setLoading(false);
-                }
+                setIsAdmin(false);
+                setLoading(false);
             } else {
                 // User is authenticated. Now we verify if they are actually an Admin.
                 try {
@@ -55,24 +53,21 @@ export default function AdminLayout({
                             }
                             // 3. Check if there's any document that contains their email field
                             else {
-                                import("firebase/firestore").then(async ({ collection, query, where, getDocs }) => {
-                                    const q = query(collection(db, "users"), where("email", "==", user.email), where("role", "==", "admin"));
-                                    const querySnapshot = await getDocs(q);
-                                    if (!querySnapshot.empty) {
-                                        // This means we found a document with their email and admin role!
-                                        setLoading(false);
-                                        if (pathname === "/admin/login") {
-                                            router.push("/admin/dashboard");
-                                        }
-                                    } else {
-                                        // Still no admin found. Kick them out.
-                                        console.warn(`Unauthorized access attempt by: ${user.email}`);
-                                        await signOut(auth);
-                                        alert("Access Denied: You do not have administrator privileges.");
-                                        router.push("/admin/login");
-                                    }
-                                });
-                                // Return early so we don't trigger the generic kickout below while the async query runs
+                                const { collection, query, where, getDocs } = await import("firebase/firestore");
+                                const q = query(collection(db, "users"), where("email", "==", user.email), where("role", "==", "admin"));
+                                const querySnapshot = await getDocs(q);
+                                if (!querySnapshot.empty) {
+                                    // This means we found a document with their email and admin role!
+                                    setIsAdmin(true);
+                                    setLoading(false);
+                                } else {
+                                    // Still no admin found. Kick them out.
+                                    console.warn(`Unauthorized access attempt by: ${user.email}`);
+                                    setIsAdmin(false);
+                                    setLoading(false);
+                                    await signOut(auth);
+                                    alert("Access Denied: You do not have administrator privileges.");
+                                }
                                 return; 
                             }
                         }
@@ -91,28 +86,42 @@ export default function AdminLayout({
                                 console.error("Error auto-provisioning super admin Firestore role:", err);
                             }
                         }
+                        setIsAdmin(true);
                         setLoading(false);
-                        // If they are on the login page but already logged in, redirect to dashboard
-                        if (pathname === "/admin/login") {
-                            router.push("/admin/dashboard");
-                        }
                     } else {
                         // User is authenticated but NOT an admin. Kick them out.
                         console.warn(`Unauthorized access attempt by: ${user.email}`);
+                        setIsAdmin(false);
+                        setLoading(false);
                         await signOut(auth);
                         alert("Access Denied: You do not have administrator privileges.");
-                        router.push("/admin/login");
                     }
                 } catch (error) {
                     console.error("Error verifying admin role:", error);
+                    setIsAdmin(false);
+                    setLoading(false);
                     await signOut(auth);
-                    router.push("/admin/login");
                 }
             }
         });
 
         return () => unsubscribe();
-    }, [pathname, router]);
+    }, []);
+
+    // 2. Separate router controller that handles path changes based on cached states
+    useEffect(() => {
+        if (loading) return;
+
+        if (isAdmin === false) {
+            if (pathname !== "/admin/login") {
+                router.push("/admin/login");
+            }
+        } else if (isAdmin === true) {
+            if (pathname === "/admin/login") {
+                router.push("/admin/dashboard");
+            }
+        }
+    }, [pathname, isAdmin, loading, router]);
 
     const handleLogout = async () => {
         await signOut(auth);

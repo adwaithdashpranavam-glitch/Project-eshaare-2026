@@ -1,53 +1,61 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import "@fontsource/pinyon-script";
 
 const slides = [
   {
     id: 1,
     video: "/videos/burj khalifa in dubai.mp4",
+    image: "https://images.unsplash.com/photo-1582672060674-bc2bd808a8b5?q=80&w=1200&auto=format&fit=crop",
     title: "BURJ KHALIFA",
   },
   {
     id: 2,
     video: "/videos/dubai united arab emirates.mp4",
+    image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=1200&auto=format&fit=crop",
     title: "DUBAI",
   },
   {
     id: 3,
     video: "/videos/kawazu town japan.mp4",
+    image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=1200&auto=format&fit=crop",
     title: "KAWAZU TOWN",
   },
   {
     id: 4,
     video: "/videos/komodo island indonesia.mp4",
+    image: "https://images.unsplash.com/photo-1516690561799-46d8f74f9abf?q=80&w=1200&auto=format&fit=crop",
     title: "KOMODO ISLAND",
   },
   {
     id: 5,
     video: "/videos/lake bohinj in slovenia.mp4",
+    image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200&auto=format&fit=crop",
     title: "LAKE BOHINJ",
   },
   {
     id: 6,
     video: "/videos/lauterbrunnen valley of switzerland.mp4",
+    image: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=1200&auto=format&fit=crop",
     title: "LAUTERBRUNNEN",
   },
   {
     id: 7,
     video: "/videos/Seoul South Korea.mp4",
+    image: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=1200&auto=format&fit=crop",
     title: "SEOUL",
   },
 ];
 
-
 export default function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
+  // Auto transition slide every 6 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
@@ -56,55 +64,46 @@ export default function Hero() {
     return () => clearInterval(interval);
   }, []);
 
+  // Reset video loaded flag when slide changes to show placeholder image instantly
   useEffect(() => {
-    videoRefs.current.forEach((video, index) => {
-      if (video) {
-        if (index === currentSlide) {
-          video.load();
-          video.currentTime = 0;
-          video.play().catch((err) => console.log(err));
-        } else {
-          video.pause();
-        }
-      }
-    });
+    setVideoLoaded(false);
   }, [currentSlide]);
 
   return (
     <section className="relative w-full h-screen bg-[#071120] overflow-hidden">
-      {/* VIDEOS */}
+      {/* VISUAL BACKGROUND LAYER */}
       <div className="absolute inset-0 overflow-hidden">
-        {slides.map((slide, index) => {
-          const isCurrent = index === currentSlide;
-          const isNext = index === (currentSlide + 1) % slides.length;
-          const shouldPreload = isCurrent || isNext;
+        {/* Instant Static Placeholder Image */}
+        <Image
+          src={slides[currentSlide].image}
+          alt={slides[currentSlide].title}
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover transition-opacity duration-1000"
+        />
 
-          return (
-            <video
-              key={slide.id}
-              ref={(el) => {
-                videoRefs.current[index] = el;
-              }}
-              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
-                isCurrent ? "opacity-100" : "opacity-0"
-              }`}
-              loop
-              muted
-              playsInline
-              preload={shouldPreload ? "auto" : "none"}
-            >
-              {shouldPreload && <source src={slide.video} type="video/mp4" />}
-            </video>
-          );
-        })}
+        {/* Dynamic Single Video Overlay */}
+        <video
+          key={currentSlide}
+          src={slides[currentSlide].video}
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+            videoLoaded ? "opacity-100" : "opacity-0"
+          }`}
+          autoPlay
+          loop
+          muted
+          playsInline
+          onPlay={() => setVideoLoaded(true)}
+          onLoadedData={() => setVideoLoaded(true)}
+        />
       </div>
 
-      {/* OVERLAY */}
+      {/* DARK OVERLAY */}
       <div className="absolute inset-0 bg-black/45" />
 
       {/* CONTENT */}
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center">
-
         <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide}
@@ -138,7 +137,6 @@ export default function Hero() {
             </button>
           </Link>
         </div>
-
       </div>
     </section>
   );

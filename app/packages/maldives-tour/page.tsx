@@ -5,7 +5,6 @@ import Image from "next/image";
 import { Calendar, Users, CheckCircle2, MessageSquare, PhoneCall, ArrowRight, ShieldCheck, Star } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
 const maldivesPackages = [
@@ -105,8 +104,7 @@ export default function MaldivesTourPage() {
 
   return (
     <main className="bg-[#071120] text-white min-h-screen">
-      <Navbar />
-
+      
       {/* HERO BANNER */}
       <section className="relative h-[65vh] w-full flex items-center justify-center overflow-hidden pt-20">
         <Image

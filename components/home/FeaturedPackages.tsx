@@ -8,6 +8,8 @@ import { ArrowRight } from "lucide-react";
 import {
   collection,
   getDocs,
+  query,
+  where,
 } from "firebase/firestore";
 
 import { db } from "@/lib/firebase";
@@ -21,17 +23,17 @@ export default function FeaturedPackages() {
   useEffect(() => {
     const fetchPackages = async () => {
       try {
-        // Fetch all packages to avoid Firestore composite index errors,
-        // then filter them locally.
-        const querySnapshot = await getDocs(collection(db, "packages"));
+        const q = query(
+          collection(db, "packages"),
+          where("active", "==", true),
+          where("featured", "==", true)
+        );
+        const querySnapshot = await getDocs(q);
 
         let packagesData = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         })) as Package[];
-
-        // Filter for active and featured packages
-        packagesData = packagesData.filter(pkg => pkg.active === true && pkg.featured === true);
 
         if (packagesData.length === 0) {
           setTourPackages(fallbackPackages as Package[]);
