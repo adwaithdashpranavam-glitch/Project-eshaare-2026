@@ -27,6 +27,7 @@ export default function AdminLayout({
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            setLoading(true);
             if (!user) {
                 setIsAdmin(false);
                 setLoading(false);
