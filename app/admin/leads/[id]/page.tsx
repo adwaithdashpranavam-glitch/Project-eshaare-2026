@@ -268,45 +268,46 @@ export default function LeadDetailsPage({
 
     if (!lead) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-[#f4f7fb]">
-                <h1 className="text-2xl font-semibold text-gray-500">
-                    Loading Lead...
-                </h1>
+            <div className="flex min-h-screen items-center justify-center bg-[#071120] text-white">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#e68932] border-t-transparent"></div>
+                    <p className="text-sm font-medium text-gray-400">Loading Lead details...</p>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[#f4f7fb] p-6 md:p-10">
-            <div className="mx-auto mt-16 max-w-5xl">
+        <div className="space-y-8 font-sans pb-12 text-white">
+            <div className="mx-auto max-w-5xl">
                 {/* BACK BUTTON */}
                 <Link
                     href="/admin/leads"
-                    className="mb-6 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-black shadow-sm transition hover:scale-[1.02]"
+                    className="inline-flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-5 py-2.5 text-xs font-semibold text-white transition hover:bg-white/10"
                 >
-                    <ArrowLeft size={18} />
+                    <ArrowLeft size={16} />
                     Back to Leads
                 </Link>
 
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6">
                     <div>
-                        <p className="text-sm uppercase tracking-[4px] text-[#00C2FF]">Lead Details</p>
-                        <h1 className="mt-3 text-4xl font-bold text-black">{lead.name}</h1>
+                        <p className="text-xs uppercase tracking-[4px] text-[#00C2FF] font-bold">Lead Details</p>
+                        <h1 className="mt-2 text-3xl font-bold text-white">{lead.name}</h1>
                     </div>
                     <div>
                         {editMode ? (
                             <button
                                 onClick={handleSaveDetails}
                                 disabled={isSaving}
-                                className="inline-flex items-center gap-2 rounded-xl bg-[#00C2FF] px-6 py-3 font-semibold text-black transition hover:scale-[1.02] disabled:opacity-50"
+                                className="inline-flex items-center gap-2 rounded-xl bg-[#e68932] hover:opacity-90 px-5 py-2.5 text-xs font-semibold text-white transition disabled:opacity-50"
                             >
-                                <Save size={18} />
+                                <Save size={16} />
                                 {isSaving ? "Saving..." : "Save Details"}
                             </button>
                         ) : (
                             <button
                                 onClick={() => setEditMode(true)}
-                                className="rounded-xl bg-black px-6 py-3 font-semibold text-white transition hover:scale-[1.02]"
+                                className="rounded-xl bg-white/5 border border-white/10 px-5 py-2.5 text-xs font-semibold text-white hover:bg-white/10 transition"
                             >
                                 Edit Details
                             </button>
@@ -314,55 +315,55 @@ export default function LeadDetailsPage({
                     </div>
                 </div>
 
-                <div className="grid gap-8 md:grid-cols-2">
+                <div className="grid gap-8 md:grid-cols-2 mt-8">
                     {/* CLIENT DETAILS */}
-                    <div className="rounded-[30px] bg-white p-8 shadow-sm">
-                        <h2 className="mb-6 text-2xl font-bold text-black">Client Details</h2>
+                    <div className="rounded-3xl bg-white/5 border border-white/10 p-6 md:p-8 space-y-6">
+                        <h2 className="text-xl font-bold text-white border-b border-white/15 pb-3">Client Details</h2>
                         <div className="space-y-4">
                             <div>
-                                <label className="text-sm text-gray-500">Lead ID</label>
-                                <p className="font-medium text-gray-500">{id}</p>
+                                <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">Lead ID</label>
+                                <p className="font-mono text-sm text-gray-300 mt-1">{id}</p>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="text-sm text-gray-500">Full Name</label>
+                                    <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">Full Name</label>
                                     {editMode ? (
-                                        <input type="text" name="name" value={formData.name || ""} onChange={handleChange} className="w-full rounded-lg border p-2" />
+                                        <input type="text" name="name" value={formData.name || ""} onChange={handleChange} className="mt-1 h-10 w-full rounded-lg border-none bg-white/5 px-3 text-xs text-white outline-none focus:bg-white/10" />
                                     ) : (
-                                        <p className="font-medium text-gray-500">{lead.name || "N/A"}</p>
+                                        <p className="font-medium text-gray-200 mt-1">{lead.name || "N/A"}</p>
                                     )}
                                 </div>
                                 <div>
-                                    <label className="text-sm text-gray-500">Source</label>
+                                    <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">Source</label>
                                     {editMode ? (
-                                        <input type="text" name="source" value={formData.source || ""} onChange={handleChange} className="w-full rounded-lg border p-2" />
+                                        <input type="text" name="source" value={formData.source || ""} onChange={handleChange} className="mt-1 h-10 w-full rounded-lg border-none bg-white/5 px-3 text-xs text-white outline-none focus:bg-white/10" />
                                     ) : (
-                                        <p className="font-medium text-gray-500 capitalize ">{lead.source || "N/A"}</p>
+                                        <p className="font-medium text-gray-200 mt-1 capitalize">{lead.source || "N/A"}</p>
                                     )}
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="text-sm text-gray-500">Phone Number</label>
+                                    <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">Phone Number</label>
                                     {editMode ? (
-                                        <input type="text" name="phone" value={formData.phone || ""} onChange={handleChange} className="w-full rounded-lg border p-2" />
+                                        <input type="text" name="phone" value={formData.phone || ""} onChange={handleChange} className="mt-1 h-10 w-full rounded-lg border-none bg-white/5 px-3 text-xs text-white outline-none focus:bg-white/10" />
                                     ) : (
-                                        <p className="font-medium text-gray-500">{lead.phone || "N/A"}</p>
+                                        <p className="font-medium text-gray-200 mt-1">{lead.phone || "N/A"}</p>
                                     )}
                                 </div>
                                 <div>
-                                    <label className="text-sm text-gray-500">WhatsApp</label>
+                                    <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">WhatsApp</label>
                                     {editMode ? (
-                                        <input type="text" name="whatsapp" value={formData.whatsapp || ""} onChange={handleChange} className="w-full rounded-lg border p-2" />
+                                        <input type="text" name="whatsapp" value={formData.whatsapp || ""} onChange={handleChange} className="mt-1 h-10 w-full rounded-lg border-none bg-white/5 px-3 text-xs text-white outline-none focus:bg-white/10" />
                                     ) : (
-                                        <div className="flex items-center gap-2">
-                                            <p className="font-medium text-gray-500">{lead.whatsapp || "N/A"}</p>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <p className="font-medium text-gray-200">{lead.whatsapp || "N/A"}</p>
                                             {lead.whatsapp && (
                                                 <a
                                                     href={`https://wa.me/${lead.whatsapp.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(`Hi ${lead.name}, this is ESHAAR TOUR. We are checking your inquiry.`)}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-1 rounded bg-green-500 hover:bg-green-600 px-2 py-0.5 text-xs font-bold text-white transition duration-200"
+                                                    className="inline-flex items-center gap-1 rounded bg-[#25D366] hover:bg-[#20ba59] px-2 py-0.5 text-[10px] font-bold text-white transition duration-200"
                                                 >
                                                     Chat
                                                 </a>
@@ -372,143 +373,143 @@ export default function LeadDetailsPage({
                                 </div>
                             </div>
                             <div>
-                                <label className="text-sm text-gray-500">Email</label>
+                                <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">Email</label>
                                 {editMode ? (
-                                    <input type="email" name="email" value={formData.email || ""} onChange={handleChange} className="w-full rounded-lg border p-2" />
+                                    <input type="email" name="email" value={formData.email || ""} onChange={handleChange} className="mt-1 h-10 w-full rounded-lg border-none bg-white/5 px-3 text-xs text-white outline-none focus:bg-white/10" />
                                 ) : (
-                                    <p className="font-medium text-gray-500">{lead.email || "N/A"}</p>
+                                    <p className="font-medium text-gray-200 mt-1">{lead.email || "N/A"}</p>
                                 )}
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="text-sm text-gray-500">Nationality</label>
+                                    <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">Nationality</label>
                                     {editMode ? (
-                                        <input type="text" name="nationality" value={formData.nationality || ""} onChange={handleChange} className="w-full rounded-lg border p-2" />
+                                        <input type="text" name="nationality" value={formData.nationality || ""} onChange={handleChange} className="mt-1 h-10 w-full rounded-lg border-none bg-white/5 px-3 text-xs text-white outline-none focus:bg-white/10" />
                                     ) : (
-                                        <p className="font-medium text-gray-500">{lead.nationality || "N/A"}</p>
+                                        <p className="font-medium text-gray-200 mt-1">{lead.nationality || "N/A"}</p>
                                     )}
                                 </div>
                                 <div>
-                                    <label className="text-sm text-gray-500">Current Country</label>
+                                    <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">Current Country</label>
                                     {editMode ? (
-                                        <input type="text" name="currentCountry" value={formData.currentCountry || ""} onChange={handleChange} className="w-full rounded-lg border p-2" />
+                                        <input type="text" name="currentCountry" value={formData.currentCountry || ""} onChange={handleChange} className="mt-1 h-10 w-full rounded-lg border-none bg-white/5 px-3 text-xs text-white outline-none focus:bg-white/10" />
                                     ) : (
-                                        <p className="font-medium text-gray-500 ">{lead.currentCountry || "N/A"}</p>
+                                        <p className="font-medium text-gray-200 mt-1">{lead.currentCountry || "N/A"}</p>
                                     )}
                                 </div>
                             </div>
                             <div>
-                                <label className="text-sm text-gray-500">Passport Number</label>
+                                <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">Passport Number</label>
                                 {editMode ? (
-                                    <input type="text" name="passport" value={formData.passport || ""} onChange={handleChange} className="w-full rounded-lg border p-2" />
+                                    <input type="text" name="passport" value={formData.passport || ""} onChange={handleChange} className="mt-1 h-10 w-full rounded-lg border-none bg-white/5 px-3 text-xs text-white outline-none focus:bg-white/10" />
                                 ) : (
-                                    <p className="font-medium text-gray-500">{lead.passport || "N/A"}</p>
+                                    <p className="font-medium text-gray-200 mt-1 font-mono">{lead.passport || "N/A"}</p>
                                 )}
                             </div>
                         </div>
                     </div>
 
                     {/* INQUIRY DETAILS */}
-                    <div className="rounded-[30px] bg-white p-8 shadow-sm">
-                        <h2 className="mb-6 text-2xl font-bold text-black">Inquiry Details</h2>
+                    <div className="rounded-3xl bg-white/5 border border-white/10 p-6 md:p-8 space-y-6">
+                        <h2 className="text-xl font-bold text-white border-b border-white/15 pb-3">Inquiry Details</h2>
                         <div className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="text-sm text-gray-500">Status</label>
+                                    <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">Status</label>
                                     {editMode ? (
-                                        <select name="status" value={formData.status || "New"} onChange={handleChange} className="w-full rounded-lg border p-2">
-                                            <option value="New">New</option>
-                                            <option value="Interested">Interested</option>
-                                            <option value="Follow-up">Follow-up</option>
-                                            <option value="Documents Pending">Documents Pending</option>
-                                            <option value="Payment Pending">Payment Pending</option>
-                                            <option value="Appointment Scheduled">Appointment Scheduled</option>
-                                            <option value="Submitted">Submitted</option>
-                                            <option value="Approved">Approved</option>
-                                            <option value="Rejected">Rejected</option>
-                                            <option value="Closed">Closed</option>
+                                        <select name="status" value={formData.status || "New"} onChange={handleChange} className="mt-1 h-10 w-full rounded-lg border-none bg-white/5 px-2 text-xs text-white outline-none focus:bg-white/10">
+                                            <option value="New" className="bg-[#071120]">New</option>
+                                            <option value="Interested" className="bg-[#071120]">Interested</option>
+                                            <option value="Follow-up" className="bg-[#071120]">Follow-up</option>
+                                            <option value="Documents Pending" className="bg-[#071120]">Documents Pending</option>
+                                            <option value="Payment Pending" className="bg-[#071120]">Payment Pending</option>
+                                            <option value="Appointment Scheduled" className="bg-[#071120]">Appointment Scheduled</option>
+                                            <option value="Submitted" className="bg-[#071120]">Submitted</option>
+                                            <option value="Approved" className="bg-[#071120]">Approved</option>
+                                            <option value="Rejected" className="bg-[#071120]">Rejected</option>
+                                            <option value="Closed" className="bg-[#071120]">Closed</option>
                                         </select>
                                     ) : (
-                                        <p className="font-medium text-[#00C2FF]">{lead.status || "New"}</p>
+                                        <p className="font-medium text-[#00C2FF] mt-1">{lead.status || "New"}</p>
                                     )}
                                 </div>
                                 <div>
-                                    <label className="text-sm text-gray-500">Assigned To</label>
+                                    <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">Assigned To</label>
                                     {editMode ? (
-                                        <input type="text" name="assignedTo" value={formData.assignedTo || ""} onChange={handleChange} className="w-full rounded-lg border p-2" />
+                                        <input type="text" name="assignedTo" value={formData.assignedTo || ""} onChange={handleChange} className="mt-1 h-10 w-full rounded-lg border-none bg-white/5 px-3 text-xs text-white outline-none focus:bg-white/10" />
                                     ) : (
-                                        <p className="font-medium text-gray-500">{lead.assignedTo || "Unassigned"}</p>
-                                    )}
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="text-sm text-gray-500">Visa Type</label>
-                                    {editMode ? (
-                                        <input type="text" name="visaType" value={formData.visaType || ""} onChange={handleChange} className="w-full rounded-lg border p-2" />
-                                    ) : (
-                                        <p className="font-medium text-gray-500">{lead.visaType || "N/A"}</p>
-                                    )}
-                                </div>
-                                <div>
-                                    <label className="text-sm text-gray-500">Destination</label>
-                                    {editMode ? (
-                                        <input type="text" name="destination" value={formData.destination || ""} onChange={handleChange} className="w-full rounded-lg border p-2" />
-                                    ) : (
-                                        <p className="font-medium text-gray-500">{lead.destination || "N/A"}</p>
+                                        <p className="font-medium text-gray-200 mt-1">{lead.assignedTo || "Unassigned"}</p>
                                     )}
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="text-sm text-gray-500">Travel Date</label>
+                                    <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">Visa Type</label>
                                     {editMode ? (
-                                        <input type="date" name="travelDate" value={formData.travelDate || ""} onChange={handleChange} className="w-full rounded-lg border p-2" />
+                                        <input type="text" name="visaType" value={formData.visaType || ""} onChange={handleChange} className="mt-1 h-10 w-full rounded-lg border-none bg-white/5 px-3 text-xs text-white outline-none focus:bg-white/10" />
                                     ) : (
-                                        <p className="font-medium text-gray-500">{lead.travelDate || "N/A"}</p>
+                                        <p className="font-medium text-gray-200 mt-1">{lead.visaType || "N/A"}</p>
                                     )}
                                 </div>
                                 <div>
-                                    <label className="text-sm text-gray-500">Travelers</label>
+                                    <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">Destination</label>
                                     {editMode ? (
-                                        <input type="number" name="travelers" value={formData.travelers || ""} onChange={handleChange} className="w-full rounded-lg border p-2" />
+                                        <input type="text" name="destination" value={formData.destination || ""} onChange={handleChange} className="mt-1 h-10 w-full rounded-lg border-none bg-white/5 px-3 text-xs text-white outline-none focus:bg-white/10" />
                                     ) : (
-                                        <p className="font-medium text-gray-500">{lead.travelers || "N/A"}</p>
+                                        <p className="font-medium text-gray-200 mt-1">{lead.destination || "N/A"}</p>
                                     )}
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="text-sm text-gray-500">Budget</label>
+                                    <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">Travel Date</label>
                                     {editMode ? (
-                                        <input type="text" name="budget" value={formData.budget || ""} onChange={handleChange} className="w-full rounded-lg border p-2" />
+                                        <input type="date" name="travelDate" value={formData.travelDate || ""} onChange={handleChange} className="mt-1 h-10 w-full rounded-lg border-none bg-[#071120] border border-white/10 px-3 text-xs text-white outline-none" />
                                     ) : (
-                                        <p className="font-medium text-gray-500">{lead.budget || "N/A"}</p>
+                                        <p className="font-medium text-gray-200 mt-1">{lead.travelDate || "N/A"}</p>
                                     )}
                                 </div>
                                 <div>
-                                    <label className="text-sm text-gray-500">Supplier</label>
+                                    <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">Travelers</label>
                                     {editMode ? (
-                                        <input type="text" name="supplier" value={formData.supplier || ""} onChange={handleChange} className="w-full rounded-lg border p-2" />
+                                        <input type="number" name="travelers" value={formData.travelers || ""} onChange={handleChange} className="mt-1 h-10 w-full rounded-lg border-none bg-white/5 px-3 text-xs text-white outline-none focus:bg-white/10" />
                                     ) : (
-                                        <p className="font-medium text-gray-500">{lead.supplier || "N/A"}</p>
+                                        <p className="font-medium text-gray-200 mt-1">{lead.travelers || "N/A"}</p>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">Budget</label>
+                                    {editMode ? (
+                                        <input type="text" name="budget" value={formData.budget || ""} onChange={handleChange} className="mt-1 h-10 w-full rounded-lg border-none bg-white/5 px-3 text-xs text-white outline-none focus:bg-white/10" />
+                                    ) : (
+                                        <p className="font-medium text-gray-200 mt-1">{lead.budget || "N/A"}</p>
+                                    )}
+                                </div>
+                                <div>
+                                    <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">Supplier</label>
+                                    {editMode ? (
+                                        <input type="text" name="supplier" value={formData.supplier || ""} onChange={handleChange} className="mt-1 h-10 w-full rounded-lg border-none bg-white/5 px-3 text-xs text-white outline-none focus:bg-white/10" />
+                                    ) : (
+                                        <p className="font-medium text-gray-200 mt-1">{lead.supplier || "N/A"}</p>
                                     )}
                                 </div>
                             </div>
                             <div>
-                                <label className="text-sm text-gray-500">Travel History</label>
+                                <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">Travel History</label>
                                 {editMode ? (
-                                    <textarea name="travelHistory" value={formData.travelHistory || ""} onChange={handleChange} className="w-full rounded-lg border p-2" rows={2}></textarea>
+                                    <textarea name="travelHistory" value={formData.travelHistory || ""} onChange={handleChange} className="mt-1 w-full rounded-lg border-none bg-white/5 p-3 text-xs text-white outline-none focus:bg-white/10" rows={2}></textarea>
                                 ) : (
-                                    <p className="font-medium text-gray-500">{lead.travelHistory || "N/A"}</p>
+                                    <p className="font-medium text-gray-300 mt-1 leading-5">{lead.travelHistory || "N/A"}</p>
                                 )}
                             </div>
                             <div>
-                                <label className="text-sm text-gray-500">Rejection History</label>
+                                <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">Rejection History</label>
                                 {editMode ? (
-                                    <textarea name="rejectionHistory" value={formData.rejectionHistory || ""} onChange={handleChange} className="w-full rounded-lg border p-2" rows={2}></textarea>
+                                    <textarea name="rejectionHistory" value={formData.rejectionHistory || ""} onChange={handleChange} className="mt-1 w-full rounded-lg border-none bg-white/5 p-3 text-xs text-white outline-none focus:bg-white/10" rows={2}></textarea>
                                 ) : (
-                                    <p className="font-medium text-gray-500">{lead.rejectionHistory || "None"}</p>
+                                    <p className="font-medium text-gray-300 mt-1 leading-5">{lead.rejectionHistory || "None"}</p>
                                 )}
                             </div>
                         </div>
@@ -517,26 +518,26 @@ export default function LeadDetailsPage({
 
                 {/* MESSAGE */}
                 {lead.message && (
-                    <div className="mt-8 rounded-[30px] bg-white p-8 shadow-sm">
-                        <h2 className="text-2xl font-bold text-black">Customer Message</h2>
-                        <p className="mt-5 leading-8 text-gray-600">{lead.message}</p>
+                    <div className="mt-8 rounded-3xl bg-white/5 border border-white/10 p-6 md:p-8 space-y-4">
+                        <h2 className="text-xl font-bold text-white border-b border-white/15 pb-3">Customer Message</h2>
+                        <p className="leading-7 text-gray-300">{lead.message}</p>
                     </div>
                 )}
 
                 {/* DOCUMENTS SECTION */}
-                <div className="mt-8 rounded-[30px] bg-white p-8 shadow-sm">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-2xl font-bold text-black font-sans">Client Documents</h2>
+                <div className="mt-8 rounded-3xl bg-white/5 border border-white/10 p-6 md:p-8 space-y-6">
+                    <div className="flex items-center justify-between border-b border-white/15 pb-3">
+                        <h2 className="text-xl font-bold text-white">Client Documents</h2>
                         <button
                             onClick={() => setShowUploader(!showUploader)}
-                            className="rounded-xl bg-black px-4 py-2.5 text-xs font-semibold text-white hover:bg-black/80 transition"
+                            className="rounded-xl bg-white/5 border border-white/10 px-4 py-2 text-xs font-semibold text-white hover:bg-white/10 transition"
                         >
                             {showUploader ? "Hide Uploader" : "Upload Document"}
                         </button>
                     </div>
 
                     {showUploader && (
-                        <div className="mb-6">
+                        <div className="mb-6 bg-black/10 border border-white/5 p-6 rounded-2xl">
                             <DocumentUploader
                                 entityId={id}
                                 entityType="leads"
@@ -545,44 +546,44 @@ export default function LeadDetailsPage({
                         </div>
                     )}
 
-                    <div className="bg-[#071120] rounded-[24px] p-6 border border-white/5">
+                    <div className="bg-[#071120] rounded-2xl p-6 border border-white/5">
                         <DocumentList entityId={id} entityType="leads" />
                     </div>
                 </div>
 
                 {/* PAYMENTS & INVOICING SECTION */}
-                <div className="mt-8 rounded-[30px] bg-white p-8 shadow-sm">
-                    <h2 className="text-2xl font-bold text-black mb-6">Payments & Invoicing</h2>
+                <div className="mt-8 rounded-3xl bg-white/5 border border-white/10 p-6 md:p-8 space-y-6">
+                    <h2 className="text-xl font-bold text-white border-b border-white/15 pb-3">Payments & Invoicing</h2>
                     
                     <div className="grid gap-6 md:grid-cols-3">
                         {/* New Invoice Form */}
-                        <div className="md:col-span-1 rounded-2xl border border-gray-100 bg-gray-50 p-6">
-                            <h3 className="text-lg font-semibold text-black mb-4">Generate Invoice</h3>
+                        <div className="md:col-span-1 rounded-2xl border border-white/5 bg-black/20 p-5 space-y-4">
+                            <h3 className="text-sm font-bold text-white uppercase tracking-wider">Generate Invoice</h3>
                             <div className="space-y-4">
                                 <div>
-                                    <label className="text-xs text-gray-500 font-medium">Description</label>
+                                    <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Description</label>
                                     <input
                                         type="text"
                                         placeholder="e.g. Schengen Visa Consultation"
                                         value={invoiceDesc}
                                         onChange={(e) => setInvoiceDesc(e.target.value)}
-                                        className="mt-1 h-11 w-full rounded-xl border border-gray-200 bg-white px-4 text-sm text-black outline-none focus:border-[#00C2FF]"
+                                        className="mt-1 h-10 w-full rounded-lg border-none bg-white/5 px-3 text-xs text-white outline-none focus:bg-white/10"
                                     />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-gray-500 font-medium">Amount (AED)</label>
+                                    <label className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Amount (AED)</label>
                                     <input
                                         type="number"
                                         placeholder="0.00"
                                         value={invoiceAmount}
                                         onChange={(e) => setInvoiceAmount(e.target.value)}
-                                        className="mt-1 h-11 w-full rounded-xl border border-gray-200 bg-white px-4 text-sm text-black outline-none focus:border-[#00C2FF]"
+                                        className="mt-1 h-10 w-full rounded-lg border-none bg-white/5 px-3 text-xs text-white outline-none focus:bg-white/10"
                                     />
                                 </div>
                                 <button
                                     onClick={handleGenerateInvoice}
                                     disabled={generatingInvoice}
-                                    className="w-full h-11 rounded-xl bg-black text-white hover:bg-black/80 font-semibold text-sm transition disabled:opacity-50"
+                                    className="w-full h-10 rounded-lg bg-[#e68932] text-white hover:opacity-90 font-semibold text-xs transition disabled:opacity-50"
                                 >
                                     {generatingInvoice ? "Generating..." : "Generate Invoice"}
                                 </button>
@@ -590,35 +591,35 @@ export default function LeadDetailsPage({
                         </div>
 
                         {/* Invoices List */}
-                        <div className="md:col-span-2 rounded-2xl border border-gray-100 bg-gray-50 p-6">
-                            <h3 className="text-lg font-semibold text-black mb-4">Invoice History</h3>
+                        <div className="md:col-span-2 rounded-2xl border border-white/5 bg-black/20 p-5">
+                            <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Invoice History</h3>
                             {invoices.length === 0 ? (
-                                <p className="text-sm text-gray-500">No invoices generated yet.</p>
+                                <p className="text-xs text-gray-500 py-6 text-center">No invoices generated yet.</p>
                             ) : (
                                 <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
                                     {invoices.map((inv) => (
-                                        <div key={inv.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-xl bg-white border border-gray-100 p-4 shadow-sm gap-4">
+                                        <div key={inv.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-xl bg-white/5 border border-white/5 p-4 shadow-sm gap-4">
                                             <div>
-                                                <div className="font-semibold text-black">{inv.description}</div>
+                                                <div className="font-semibold text-white text-sm">{inv.description}</div>
                                                 <div className="text-xs text-gray-400 mt-1">
                                                     AED {inv.amount} + 5% VAT (AED {inv.vat})
                                                 </div>
-                                                <div className="text-xs text-gray-500 mt-0.5">
+                                                <div className="text-[10px] text-gray-500 mt-0.5">
                                                     Created: {new Date(inv.createdAt).toLocaleDateString()}
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-3">
-                                                <span className={`text-xs px-3 py-1 font-semibold rounded-full ${inv.status === 'Paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                                <span className={`text-[10px] px-2.5 py-0.5 font-bold uppercase tracking-wider rounded border ${inv.status === 'Paid' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'}`}>
                                                     {inv.status}
                                                 </span>
-                                                <span className="font-bold text-black text-sm">
+                                                <span className="font-bold text-[#e68932] text-sm">
                                                     AED {inv.total}
                                                 </span>
                                                 {inv.status === 'Pending' && (
-                                                    <div className="flex gap-2">
+                                                    <div className="flex gap-1">
                                                         <button
                                                             onClick={() => handleMarkAsPaid(inv.id, inv.total, inv.description)}
-                                                            className="rounded-lg bg-green-500 hover:bg-green-600 px-3 py-1 text-xs font-semibold text-white transition"
+                                                            className="rounded bg-green-500 hover:bg-green-600 px-2.5 py-1 text-[10px] font-bold text-white transition"
                                                         >
                                                             Mark Paid
                                                         </button>
@@ -628,9 +629,9 @@ export default function LeadDetailsPage({
                                                                 alert(`Simulated Razorpay Link:\nhttps://checkout.razorpay.com/mock_pay?id=${inv.id}&amount=${inv.total * 100}`);
                                                                 handleMarkAsPaid(inv.id, inv.total, inv.description);
                                                             }}
-                                                            className="rounded-lg bg-blue-500 hover:bg-blue-600 px-3 py-1 text-xs font-semibold text-white transition"
+                                                            className="rounded bg-blue-500 hover:bg-blue-600 px-2.5 py-1 text-[10px] font-bold text-white transition"
                                                         >
-                                                            Pay Link (Sim)
+                                                            Link (Sim)
                                                         </button>
                                                     </div>
                                                 )}
@@ -644,34 +645,34 @@ export default function LeadDetailsPage({
                 </div>
 
                 {/* NOTES SECTION */}
-                <div className="mt-8 rounded-[30px] bg-white p-8 shadow-sm mb-10">
-                    <h2 className="text-2xl font-bold text-black">Internal Notes</h2>
-                    <div className="mt-6 flex flex-col gap-4 md:flex-row">
+                <div className="mt-8 rounded-3xl bg-white/5 border border-white/10 p-6 md:p-8 space-y-6">
+                    <h2 className="text-xl font-bold text-white border-b border-white/15 pb-3">Internal Notes</h2>
+                    <div className="flex flex-col gap-4 md:flex-row">
                         <input
                             type="text"
                             placeholder="Add internal note..."
                             value={note}
                             onChange={(e) => setNote(e.target.value)}
-                            className="h-14 flex-1 rounded-2xl border border-gray-200 px-5 text-black outline-none transition focus:border-[#00C2FF]"
+                            className="h-11 flex-1 rounded-xl border-none bg-white/5 px-4 text-xs text-white outline-none focus:bg-white/10"
                             onKeyDown={(e) => e.key === 'Enter' && addNote()}
                         />
                         <button
                             onClick={addNote}
-                            className="h-14 rounded-2xl bg-[#00C2FF] px-6 font-semibold text-black transition hover:scale-[1.02]"
+                            className="h-11 rounded-xl bg-[#e68932] px-5 font-semibold text-xs text-white transition hover:opacity-90"
                         >
                             Add Note
                         </button>
                     </div>
 
-                    <div className="mt-8 space-y-4">
+                    <div className="space-y-4 max-h-[400px] overflow-y-auto pr-1">
                         {lead.notes?.length ? (
                             [...lead.notes].reverse().map((item, index) => (
-                                <div key={index} className="rounded-2xl border border-gray-100 bg-gray-50 p-5">
-                                    <p className="text-gray-700">{item.text}</p>
+                                <div key={index} className="rounded-xl border border-white/5 bg-black/20 p-4">
+                                    <p className="text-xs text-gray-300 leading-5">{item.text}</p>
                                 </div>
                             ))
                         ) : (
-                            <p className="text-gray-500">No notes added yet.</p>
+                            <p className="text-xs text-gray-500 text-center py-4">No internal notes added yet.</p>
                         )}
                     </div>
                 </div>

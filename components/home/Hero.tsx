@@ -45,7 +45,22 @@ const slides = [
 
 export default function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [loadedIndices, setLoadedIndices] = useState<number[]>([0, 1]);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+
+  // Progressive preloading of the next slide in sequence
+  useEffect(() => {
+    setLoadedIndices((prev) => {
+      const nextIdx = (currentSlide + 1) % slides.length;
+      if (prev.includes(currentSlide) && prev.includes(nextIdx)) {
+        return prev;
+      }
+      const nextList = [...prev];
+      if (!nextList.includes(currentSlide)) nextList.push(currentSlide);
+      if (!nextList.includes(nextIdx)) nextList.push(nextIdx);
+      return nextList;
+    });
+  }, [currentSlide]);
 
   // Auto transition slide every 6 seconds
   useEffect(() => {
@@ -61,6 +76,7 @@ export default function Hero() {
     videoRefs.current.forEach((video, index) => {
       if (video) {
         if (index === currentSlide) {
+          // Play current slide from start
           video.currentTime = 0;
           video.play().catch((err) => console.log("Video play failed:", err));
         } else {
@@ -74,23 +90,24 @@ export default function Hero() {
     <section className="relative w-full h-screen bg-[#071120] overflow-hidden">
       {/* VISUAL BACKGROUND LAYER */}
       <div className="absolute inset-0 overflow-hidden">
-        {slides.map((slide, index) => (
-          <video
-            key={slide.id}
-            ref={(el) => {
-              videoRefs.current[index] = el;
-            }}
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
-              index === currentSlide ? "opacity-100" : "opacity-0"
-            }`}
-            loop
-            muted
-            playsInline
-            autoPlay={index === 0}
-          >
-            <source src={slide.video} type="video/mp4" />
-          </video>
-        ))}
+        {slides.map((slide, index) => {
+          const isLoaded = loadedIndices.includes(index);
+          return (
+            <video
+              key={slide.id}
+              ref={(el) => {
+                videoRefs.current[index] = el;
+              }}
+              src={isLoaded ? slide.video : undefined}
+              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+                index === currentSlide ? "opacity-100" : "opacity-0"
+              }`}
+              loop
+              muted
+              playsInline
+            />
+          );
+        })}
       </div>
 
       {/* DARK OVERLAY */}

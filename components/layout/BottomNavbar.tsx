@@ -64,7 +64,7 @@ export default function BottomNavbar() {
 
           {/* HOME */}
           <Link
-            href="/home"
+            href="/"
             className="flex flex-col items-center justify-center gap-1 text-xs text-gray-700 transition hover:text-[#e68932]"
           >
             <Home size={20} />
@@ -83,6 +83,7 @@ export default function BottomNavbar() {
           {/* EVENTS */}
           <Link
             href="/tours"
+            prefetch={false}
             className="flex flex-col items-center justify-center gap-1 text-xs text-gray-700 transition hover:text-[#e68932]"
           >
             <CalendarDays size={20} />
@@ -92,6 +93,7 @@ export default function BottomNavbar() {
           {/* ACCOUNT */}
           <Link
             href="/login"
+            prefetch={false}
             className="flex flex-col items-center justify-center gap-1 text-xs text-gray-700 transition hover:text-[#e68932]"
           >
             <User size={20} />

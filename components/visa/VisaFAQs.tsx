@@ -30,31 +30,31 @@ export default function VisaFAQs() {
   };
 
   return (
-    <section className="py-20 px-4 md:px-8 bg-white">
+    <section className="py-20 px-4 md:px-8 bg-[#071120] border-t border-white/5">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-[#071120]">Frequently Asked Questions</h2>
-          <p className="mt-4 text-gray-500 text-lg">Everything you need to know about our visa services.</p>
+          <h2 className="text-4xl md:text-5xl font-extrabold text-white">Frequently Asked Questions</h2>
+          <p className="mt-4 text-gray-400 text-lg">Everything you need to know about our visa services.</p>
         </div>
 
         <div className="space-y-4">
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className={`border ${openIndex === index ? 'border-[#00C2FF] bg-[#00C2FF]/5' : 'border-gray-200'} rounded-2xl overflow-hidden transition-all duration-300`}
+              className={`border ${openIndex === index ? 'border-[#00C2FF] bg-[#00C2FF]/5' : 'border-white/10 bg-white/5'} rounded-2xl overflow-hidden transition-all duration-300`}
             >
               <button
                 className="w-full flex items-center justify-between p-6 text-left focus:outline-none"
                 onClick={() => toggleFaq(index)}
               >
-                <span className="font-semibold text-lg text-[#071120]">{faq.question}</span>
+                <span className="font-semibold text-lg text-white">{faq.question}</span>
                 <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${openIndex === index ? 'rotate-180 text-[#00C2FF]' : ''}`} />
               </button>
               
               <div 
                 className={`overflow-hidden transition-all duration-300 ${openIndex === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
               >
-                <div className="p-6 pt-0 text-gray-600 leading-relaxed border-t border-transparent">
+                <div className="p-6 pt-0 text-gray-300 leading-relaxed border-t border-transparent">
                   {faq.answer}
                 </div>
               </div>

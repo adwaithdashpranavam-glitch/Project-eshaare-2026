@@ -1,8 +1,6 @@
 import { initializeApp } from "firebase/app";
 
-import {
-    initializeFirestore,
-} from "firebase/firestore";
+import { getFirestore } from "firebase/firestore";
 
 import {
     getAuth,
@@ -24,10 +22,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-// Configure Firestore with long polling to prevent WebSocket connection timeouts
-export const db = initializeFirestore(app, {
-    experimentalForceLongPolling: true,
-});
+// Use standard Firestore with high-performance WebSockets
+export const db = getFirestore(app);
 
 export const auth = getAuth(app);
 

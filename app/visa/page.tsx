@@ -6,7 +6,7 @@ import VisaWhatsAppInquiry from "@/components/visa/VisaWhatsAppInquiry";
 
 export default function VisaServicesPage() {
   return (
-    <main className="bg-[#f5f5f5] w-full min-h-screen">
+    <main className="bg-[#071120] w-full min-h-screen">
       <VisaHero />
       <VisaCategories />
       <VisaFeatures />

@@ -58,11 +58,22 @@ const toSlug = (text: string) => {
   if (t === "Appointment Booking") return "/appointments";
   if (t === "Enquiry Form" || t === "Enquire Now" || t === "Start Your Journey" || t === "Package Customization" || t === "Flight Enquiry" || t === "Hotel Enquiry") return "/#inquiry";
 
-  // Specific Visas redirect to the main visa page as per requirement #5
-  if (t === "Schengen Visa" || t === "UK Visa" || t === "USA Visa" || t === "Japan Visa") return "/visa";
+  // Specific Visa page mappings
+  if (t === "Schengen Visa") return "/visa/schengen";
+  if (t === "UK Visa") return "/visa/uk";
+  if (t === "USA Visa") return "/visa/usa";
+  if (t === "Japan Visa") return "/visa/japan";
+  if (t === "UAE Visa") return "/visa/uae";
+  if (t === "Canada Visa") return "/visa/canada";
+  if (t === "Australia Visa") return "/visa/australia";
+  if (t === "Saudi Visa") return "/visa/saudi";
 
-  // Visa Services
-  if (t === "Visa Services" || t === "Visa Consultation" || t.endsWith("Visa")) return "/visa";
+  // Visa Services main landing page
+  if (t === "Visa Services" || t === "Visa Consultation") return "/visa";
+  if (t.endsWith("Visa")) {
+    const country = t.slice(0, -5).trim().toLowerCase().replace(/ /g, "-");
+    return `/visa/${country}`;
+  }
 
   // Specific Packages redirect to the main packages page (/packages) as per requirement
   if (t === "Holiday Packages" || t.endsWith("Packages") || t.endsWith("Tours") || t === "Japan Packages" || t === "Thailand Packages" || t === "Maldives Packages" || t === "Europe Tours") return "/packages";
@@ -170,21 +181,21 @@ export default function Navbar() {
                     <div key={sub.title} className="relative group/sub">
                       {sub.links && sub.links.length > 0 ? (
                         <>
-                          <Link href={toSlug(sub.title)} className="px-5 py-3 hover:bg-orange-50/50 hover:text-[#e68932] flex items-center justify-between text-sm font-medium text-gray-700 cursor-pointer transition-colors">
+                          <Link href={toSlug(sub.title)} prefetch={false} className="px-5 py-3 hover:bg-orange-50/50 hover:text-[#e68932] flex items-center justify-between text-sm font-medium text-gray-700 cursor-pointer transition-colors">
                             {sub.title} <ChevronRight className="w-4 h-4 text-gray-400 group-hover/sub:text-[#e68932]" />
                           </Link>
 
                           {/* Subcategory Dropdown */}
                           <div className="absolute top-0 left-full -ml-1 w-60 bg-white border border-gray-100 shadow-xl rounded-xl opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-300 py-2">
                             {sub.links.map((link) => (
-                              <Link key={link} href={toSlug(link)} className="block px-5 py-2.5 hover:bg-orange-50/50 hover:text-[#e68932] text-sm text-gray-600 transition-colors">
+                              <Link key={link} href={toSlug(link)} prefetch={false} className="block px-5 py-2.5 hover:bg-orange-50/50 hover:text-[#e68932] text-sm text-gray-600 transition-colors">
                                 {link}
                               </Link>
                             ))}
                           </div>
                         </>
                       ) : (
-                        <Link href={toSlug(sub.title)} className="block px-5 py-3 hover:bg-orange-50/50 hover:text-[#e68932] text-sm font-medium text-gray-700 transition-colors">
+                        <Link href={toSlug(sub.title)} prefetch={false} className="block px-5 py-3 hover:bg-orange-50/50 hover:text-[#e68932] text-sm font-medium text-gray-700 transition-colors">
                           {sub.title}
                         </Link>
                       )}
@@ -193,12 +204,12 @@ export default function Navbar() {
                 ) : (
                   <>
                     {navItem.links?.map((link) => (
-                      <Link key={link} href={toSlug(link)} className="block px-5 py-2.5 hover:bg-orange-50/50 hover:text-[#e68932] text-sm font-medium text-gray-700 transition-colors">
+                      <Link key={link} href={toSlug(link)} prefetch={false} className="block px-5 py-2.5 hover:bg-orange-50/50 hover:text-[#e68932] text-sm font-medium text-gray-700 transition-colors">
                         {link}
                       </Link>
                     ))}
                     {navItem.title === "ONLINE SERVICES" && (
-                      <Link href="/admin" className="flex items-center justify-end px-5 py-2 text-gray-300 hover:text-[#e68932] opacity-30 hover:opacity-100 transition-all border-t border-gray-50/50 mt-1" title="Admin Portal">
+                      <Link href="/admin" prefetch={false} className="flex items-center justify-end px-5 py-2 text-gray-300 hover:text-[#e68932] opacity-30 hover:opacity-100 transition-all border-t border-gray-50/50 mt-1" title="Admin Portal">
                         <span className="text-[10px] uppercase font-bold tracking-widest mr-1.5">Portal</span>
                         <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
@@ -269,7 +280,7 @@ export default function Navbar() {
                               {mobileSubExpanded === sub.title && (
                                 <div className="pl-4 py-1 flex flex-col gap-1 border-l-2 border-gray-100 ml-2">
                                   {sub.links.map((link) => (
-                                    <Link key={link} href={toSlug(link)} onClick={() => setOpen(false)} className="py-2 text-[13px] text-gray-600">
+                                    <Link key={link} href={toSlug(link)} prefetch={false} onClick={() => setOpen(false)} className="py-2 text-[13px] text-gray-600">
                                       {link}
                                     </Link>
                                   ))}
@@ -277,7 +288,7 @@ export default function Navbar() {
                               )}
                             </>
                           ) : (
-                            <Link href={toSlug(sub.title)} onClick={() => setOpen(false)} className="block py-2.5 text-sm font-semibold text-gray-700">
+                            <Link href={toSlug(sub.title)} prefetch={false} onClick={() => setOpen(false)} className="block py-2.5 text-sm font-semibold text-gray-700">
                               {sub.title}
                             </Link>
                           )}
@@ -286,12 +297,12 @@ export default function Navbar() {
                     ) : (
                       <div className="flex flex-col gap-1">
                         {navItem.links?.map((link) => (
-                          <Link key={link} href={toSlug(link)} onClick={() => setOpen(false)} className="py-2.5 text-[13px] font-medium text-gray-600">
+                          <Link key={link} href={toSlug(link)} prefetch={false} onClick={() => setOpen(false)} className="py-2.5 text-[13px] font-medium text-gray-600">
                             {link}
                           </Link>
                         ))}
                         {navItem.title === "ONLINE SERVICES" && (
-                          <Link href="/admin" onClick={() => setOpen(false)} className="flex items-center gap-1.5 py-2.5 text-[11px] font-bold text-gray-300 hover:text-[#e68932] opacity-40 transition-all mt-1 border-t border-gray-100">
+                          <Link href="/admin" prefetch={false} onClick={() => setOpen(false)} className="flex items-center gap-1.5 py-2.5 text-[11px] font-bold text-gray-300 hover:text-[#e68932] opacity-40 transition-all mt-1 border-t border-gray-100">
                             <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                               <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>

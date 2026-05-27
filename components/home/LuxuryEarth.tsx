@@ -5,13 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import * as THREE from "three";
 import Link from "next/link";
-import countriesGeoJson from "@/data/countries.geo.json";
 import countryLabelsData from "@/data/country-labels.json";
 import citiesData from "@/data/world-cities.json";
 
 const countryLabels = countryLabelsData as any[];
 const cities = citiesData as any[];
-const countriesGeo = countriesGeoJson as any;
 
 // GLOBE
 const Globe = dynamic(
@@ -166,6 +164,15 @@ export default function LuxuryEarth() {
   
   // Level of Detail (LOD) Zoom Tier
   const [zoomTier, setZoomTier] = useState<"space" | "regional" | "poi">("space");
+
+  const [countriesGeo, setCountriesGeo] = useState<any>({ features: [] });
+
+  useEffect(() => {
+    fetch("/data/countries.geo.json")
+      .then((res) => res.json())
+      .then((data) => setCountriesGeo(data))
+      .catch((err) => console.error("Failed to load map regions data:", err));
+  }, []);
 
   // RESIZE
   useEffect(() => {

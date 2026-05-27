@@ -61,17 +61,17 @@ const categories = [
 
 export default function VisaCategories() {
   return (
-    <section id="categories" className="py-20 px-4 md:px-8 bg-white">
+    <section id="categories" className="py-20 px-4 md:px-8 bg-[#071120]">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <p className="text-sm font-semibold uppercase tracking-widest text-[#00C2FF] mb-3">Choose Your Destination</p>
-          <h2 className="text-4xl md:text-5xl font-extrabold text-[#071120]">Popular Visa Categories</h2>
-          <p className="mt-4 text-gray-500 max-w-2xl mx-auto text-lg">We provide expert assistance for a wide range of visa categories globally.</p>
+          <h2 className="text-4xl md:text-5xl font-extrabold text-white">Popular Visa Categories</h2>
+          <p className="mt-4 text-gray-400 max-w-2xl mx-auto text-lg">We provide expert assistance for a wide range of visa categories globally.</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {categories.map((cat, idx) => (
-            <div key={idx} className="group rounded-[24px] border border-gray-100 bg-white overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+            <div key={idx} className="group rounded-[24px] border border-white/10 bg-white/5 overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
               <div className="relative h-48 w-full overflow-hidden">
                 <Image
                   src={cat.image}
@@ -83,10 +83,10 @@ export default function VisaCategories() {
                 <h3 className="absolute bottom-4 left-6 text-2xl font-bold text-white">{cat.name}</h3>
               </div>
               <div className="p-6">
-                <p className="text-gray-600 mb-6">{cat.desc}</p>
+                <p className="text-gray-300 mb-6">{cat.desc}</p>
                 <Link 
                   href={cat.href}
-                  className="block w-full py-3 rounded-xl bg-gray-50 text-[#071120] font-semibold group-hover:bg-[#00C2FF] transition-colors duration-300 text-center"
+                  className="block w-full py-3 rounded-xl bg-white/5 border border-white/10 text-white font-semibold group-hover:bg-[#00C2FF] group-hover:text-black transition-colors duration-300 text-center"
                 >
                   Apply Now
                 </Link>
