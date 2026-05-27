@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 
 import {
-    getFirestore,
+    initializeFirestore,
 } from "firebase/firestore";
 
 import {
@@ -24,7 +24,10 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-export const db = getFirestore(app);
+// Configure Firestore with long polling to prevent WebSocket connection timeouts
+export const db = initializeFirestore(app, {
+    experimentalForceLongPolling: true,
+});
 
 export const auth = getAuth(app);
 

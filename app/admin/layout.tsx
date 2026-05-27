@@ -154,48 +154,126 @@ export default function AdminLayout({
                         Tourism CRM Panel
                     </p>
 
-                    <nav className="mt-10 space-y-2">
+                    <nav className="mt-10 space-y-1 max-h-[65vh] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-white/10">
                         <Link
                             href="/admin/dashboard"
-                            className={`block rounded-xl px-4 py-3 transition-colors ${pathname === '/admin/dashboard' ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname === '/admin/dashboard' ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
                         >
                             Dashboard
                         </Link>
                         <Link
                             href="/admin/packages"
-                            className={`block rounded-xl px-4 py-3 transition-colors ${pathname.includes('/admin/packages') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/packages') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
                         >
                             Packages
                         </Link>
                         <Link
                             href="/admin/leads"
-                            className={`block rounded-xl px-4 py-3 transition-colors ${pathname.includes('/admin/leads') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/leads') && !pathname.includes('/admin/leads/') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
                         >
-                            Leads
+                            Leads Inbox
                         </Link>
                         <Link
                             href="/admin/appointments"
-                            className={`block rounded-xl px-4 py-3 transition-colors ${pathname.includes('/admin/appointments') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/appointments') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
                         >
                             Appointments
                         </Link>
                         <Link
                             href="/admin/visa-applications"
-                            className={`block rounded-xl px-4 py-3 transition-colors ${pathname.includes('/admin/visa-applications') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/visa-applications') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
                         >
                             Visa Applications
                         </Link>
                         <Link
+                            href="/admin/accounts"
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/accounts') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                        >
+                            Accounts (Corp/Agent)
+                        </Link>
+                        <Link
+                            href="/admin/travellers"
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/travellers') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                        >
+                            Travellers Master
+                        </Link>
+                        <Link
+                            href="/admin/opportunities"
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/opportunities') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                        >
+                            Opportunity Board
+                        </Link>
+                        <Link
+                            href="/admin/quotes"
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/quotes') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                        >
+                            Quote Builder
+                        </Link>
+                        <Link
+                            href="/admin/orders"
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/orders') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                        >
+                            Orders & Bookings
+                        </Link>
+                        <Link
+                            href="/admin/tour-planner"
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/tour-planner') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                        >
+                            Tour Planner
+                        </Link>
+                        <Link
+                            href="/admin/ticketing"
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/ticketing') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                        >
+                            Flight Ticketing
+                        </Link>
+                        <Link
                             href="/admin/payments"
-                            className={`block rounded-xl px-4 py-3 transition-colors ${pathname.includes('/admin/payments') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/payments') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
                         >
                             Payments & Billing
                         </Link>
                         <Link
                             href="/admin/reports"
-                            className={`block rounded-xl px-4 py-3 transition-colors ${pathname.includes('/admin/reports') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/reports') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
                         >
                             Reports & Analytics
+                        </Link>
+                        <Link
+                            href="/admin/staff"
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/staff') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                        >
+                            Staff & Targets
+                        </Link>
+                        <Link
+                            href="/admin/documents"
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/documents') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                        >
+                            Documents Vault
+                        </Link>
+                        <Link
+                            href="/admin/communications"
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/communications') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                        >
+                            Communications Hub
+                        </Link>
+                        <Link
+                            href="/admin/tasks"
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/tasks') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                        >
+                            Tasks & Calendar
+                        </Link>
+                        <Link
+                            href="/admin/settings"
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/settings') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                        >
+                            Settings & Config
+                        </Link>
+                        <Link
+                            href="/admin/import"
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/import') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                        >
+                            Import & Sync
                         </Link>
                     </nav>
                 </div>
