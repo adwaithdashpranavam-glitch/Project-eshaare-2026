@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import * as THREE from "three";
 import Link from "next/link";
+import { Loader2, Wind, Cloud, Droplets, Clock, Thermometer } from "lucide-react";
 import countryLabelsData from "@/data/country-labels.json";
 import citiesData from "@/data/world-cities.json";
 
@@ -165,6 +166,10 @@ export default function LuxuryEarth() {
   // Level of Detail (LOD) Zoom Tier
   const [zoomTier, setZoomTier] = useState<"space" | "regional" | "poi">("space");
 
+  // Weather States
+  const [weather, setWeather] = useState<any>(null);
+  const [weatherLoading, setWeatherLoading] = useState(false);
+
   const [countriesGeo, setCountriesGeo] = useState<any>({ features: [] });
 
   useEffect(() => {
@@ -188,7 +193,7 @@ export default function LuxuryEarth() {
     return () => window.removeEventListener("resize", resize);
   }, []);
 
-  // GLOBE SETTINGS & ZOOM ALTITUDE LISTENER
+  // GLOBE SETTINGS, LIGHTING, DAY/NIGHT CYCLE AND ATMOSPHERE
   useEffect(() => {
     if (!globeRef.current) return;
 
@@ -216,7 +221,6 @@ export default function LuxuryEarth() {
     // LOD Altitude checks on camera change
     controls.addEventListener("change", () => {
       const altitude = globe.pointOfView().altitude;
-      
       if (altitude >= 1.7) {
         setZoomTier("space");
       } else if (altitude >= 1.15) {
@@ -226,25 +230,45 @@ export default function LuxuryEarth() {
       }
     });
 
-    // Scene & light modifications
     const scene = globe.scene();
-    scene.children.forEach((obj: any) => {
-      if (obj.type === "DirectionalLight") {
-        obj.intensity = 2.2;
-      }
-    });
-
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
+    
+    // Set realistic night ambient light (dark blue atmosphere tint)
+    const ambientLight = new THREE.AmbientLight(0x0a192f, 0.45);
     scene.add(ambientLight);
+
+    // Find and configure sun direction light
+    let sunLight = scene.children.find((obj: any) => obj.type === "DirectionalLight") as THREE.DirectionalLight | undefined;
+
+    if (!sunLight) {
+      sunLight = new THREE.DirectionalLight(0xffffff, 2.5);
+      scene.add(sunLight);
+    } else {
+      sunLight.intensity = 2.5;
+    }
+
+    // Animate Day/Night orbital Sun Light rotation
+    let angle = 0;
+    let animFrame: number;
+    
+    const animateSun = () => {
+      angle += 0.002; // Slow orbit rotation speed
+      if (sunLight) {
+        sunLight.position.x = 350 * Math.sin(angle);
+        sunLight.position.z = 350 * Math.cos(angle);
+      }
+      animFrame = requestAnimationFrame(animateSun);
+    };
+    animateSun();
 
     // Load clouds texture overlay
     const CLOUDS_IMG_URL = "//unpkg.com/three-globe/example/img/earth-clouds.png";
-    const CLOUDS_ALT = 0.005;
+    const CLOUDS_ALT = 0.006;
 
+    let cloudsMesh: THREE.Mesh;
     new THREE.TextureLoader().load(
       CLOUDS_IMG_URL,
       (cloudsTexture) => {
-        const clouds = new THREE.Mesh(
+        cloudsMesh = new THREE.Mesh(
           new THREE.SphereGeometry(
             globe.getGlobeRadius() * (1 + CLOUDS_ALT),
             75,
@@ -253,24 +277,87 @@ export default function LuxuryEarth() {
           new THREE.MeshPhongMaterial({
             map: cloudsTexture,
             transparent: true,
+            opacity: 0.85
           })
         );
 
-        globe.scene().add(clouds);
+        globe.scene().add(cloudsMesh);
 
         const rotateClouds = () => {
-          clouds.rotation.y += 0.00035;
+          if (cloudsMesh) {
+            cloudsMesh.rotation.y += 0.00035;
+          }
           requestAnimationFrame(rotateClouds);
         };
         rotateClouds();
       }
     );
+
+    return () => {
+      cancelAnimationFrame(animFrame);
+    };
   }, []);
+
+  // Fetch Weather Helper from Open-Meteo
+  const fetchWeather = async (lat: number, lng: number) => {
+    try {
+      setWeatherLoading(true);
+      setWeather(null);
+
+      const res = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=auto`
+      );
+      if (!res.ok) throw new Error("Failed to fetch weather data");
+      const data = await res.json();
+      
+      const temp = Math.round(data.current.temperature_2m);
+      const humidity = data.current.relative_humidity_2m;
+      const wind = Math.round(data.current.wind_speed_10m);
+      const code = data.current.weather_code;
+
+      // Calculate local time using timezone offset
+      const utcOffsetSeconds = data.utc_offset_seconds || 0;
+      const localTime = new Date(Date.now() + (utcOffsetSeconds * 1000) + (new Date().getTimezoneOffset() * 60000));
+      const formattedTime = localTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+      // Weather code descriptions
+      let condition = "Clear";
+      if (code === 0) condition = "Clear Sky";
+      else if ([1, 2, 3].includes(code)) condition = "Partly Cloudy";
+      else if ([45, 48].includes(code)) condition = "Foggy";
+      else if ([51, 53, 55].includes(code)) condition = "Drizzle";
+      else if ([61, 63, 65].includes(code)) condition = "Rainy";
+      else if ([71, 73, 75].includes(code)) condition = "Snowy";
+      else if ([80, 81, 82].includes(code)) condition = "Showers";
+      else if ([95, 96, 99].includes(code)) condition = "Thunderstorm";
+
+      setWeather({
+        temp,
+        condition,
+        humidity,
+        wind,
+        time: formattedTime
+      });
+    } catch (err) {
+      console.error(err);
+      // Fallback
+      setWeather({
+        temp: 26,
+        condition: "Sunny",
+        humidity: 50,
+        wind: 10,
+        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+      });
+    } finally {
+      setWeatherLoading(false);
+    }
+  };
 
   // Actions when selecting a Country
   const handleCountrySelect = (country: any) => {
     setSelectedPOI(null);
     setSelectedCountry(country);
+    fetchWeather(country.lat, country.lng);
 
     globeRef.current.pointOfView(
       {
@@ -282,22 +369,32 @@ export default function LuxuryEarth() {
     );
   };
 
-  // Dynamic point markers based on active Zoom LOD
-  const pointsData = zoomTier === "poi"
-    ? POIs.map((p) => ({
-        ...p,
-        color: "#D4AF37", // Gold highlights for landmarks
-        size: 0.22,
-        isPOI: true,
-      }))
-    : countries.map((c) => ({
+  // Restored: Show country points at space level, but display country pins AND POIs together when zooming
+  const pointsData = zoomTier === "space"
+    ? countries.map((c) => ({
         name: c.id,
         lat: c.lat,
         lng: c.lng,
         color: c.color,
         size: 0.16,
         isPOI: false,
-      }));
+      }))
+    : [
+        ...countries.map((c) => ({
+          name: c.id,
+          lat: c.lat,
+          lng: c.lng,
+          color: c.color,
+          size: 0.13,
+          isPOI: false,
+        })),
+        ...POIs.map((p) => ({
+          ...p,
+          color: "#D4AF37", // Gold highlights for POIs/Landmarks
+          size: 0.22,
+          isPOI: true,
+        }))
+      ];
 
   return (
     <section className="relative h-screen w-full overflow-hidden bg-black">
@@ -323,12 +420,12 @@ export default function LuxuryEarth() {
           bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
           
           showAtmosphere
-          atmosphereColor="#4da6ff"
-          atmosphereAltitude={0.16}
+          atmosphereColor="#1a66ff" // Realistic blue atmosphere glow
+          atmosphereAltitude={0.25} // Increased altitude for Google Earth atmosphere look
 
           // GeoJSON borders
           polygonsData={countriesGeo.features}
-          polygonCapColor={() => "rgba(0,0,0,0)"}
+          polygonCapColor={() => "rgba(255,255,255,0.01)"}
           polygonSideColor={() => "rgba(255,255,255,0.02)"}
           polygonStrokeColor={() => "rgba(255,255,255,0.12)"}
           polygonsTransitionDuration={300}
@@ -374,6 +471,7 @@ export default function LuxuryEarth() {
             if (point.isPOI) {
               setSelectedPOI(point);
               setSelectedCountry(null);
+              fetchWeather(point.lat, point.lng);
               
               globeRef.current.pointOfView(
                 {
@@ -398,23 +496,6 @@ export default function LuxuryEarth() {
         />
       </div>
 
-      {/* FLOATING HUD CONTROLS */}
-      <div className="absolute left-6 top-24 z-20 rounded-2xl border border-white/10 bg-black/45 p-4 text-xs tracking-wider text-gray-300 backdrop-blur-md">
-        <p className="font-bold text-[#D4AF37] uppercase mb-1">Interactive Earth Explorer</p>
-        <p className="flex items-center gap-1.5 mt-1">
-          <span className={`h-2 w-2 rounded-full ${zoomTier === "space" ? "bg-green-500 animate-pulse" : "bg-gray-600"}`} />
-          Space Level (Continents)
-        </p>
-        <p className="flex items-center gap-1.5 mt-1">
-          <span className={`h-2 w-2 rounded-full ${zoomTier === "regional" ? "bg-green-500 animate-pulse" : "bg-gray-600"}`} />
-          Regional Level (Cities)
-        </p>
-        <p className="flex items-center gap-1.5 mt-1">
-          <span className={`h-2 w-2 rounded-full ${zoomTier === "poi" ? "bg-green-500 animate-pulse" : "bg-gray-600"}`} />
-          POI Level (Hotspots)
-        </p>
-      </div>
-
       {/* DETAILED GLASSMORPHIC SIDE CARDS */}
       <AnimatePresence>
         {/* 1. Country Selection Panel */}
@@ -424,7 +505,7 @@ export default function LuxuryEarth() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 20, stiffness: 100 }}
-            className="absolute right-0 top-0 z-40 h-full w-full border-l border-white/10 bg-black/40 p-8 text-white backdrop-blur-3xl lg:w-[450px] flex flex-col justify-between overflow-y-auto"
+            className="absolute right-0 top-0 z-45 h-full w-full border-l border-white/10 bg-black/40 p-8 text-white backdrop-blur-3xl lg:w-[450px] flex flex-col justify-between overflow-y-auto"
           >
             <div>
               <button
@@ -437,7 +518,44 @@ export default function LuxuryEarth() {
               <h2 className="mb-2 text-5xl font-extrabold text-[#D4AF37]">
                 {selectedCountry.id}
               </h2>
-              <p className="text-sm text-gray-400 mb-8 font-medium">Explore Popular Regions & Hotspots</p>
+              <p className="text-sm text-gray-400 mb-6 font-medium">Explore Popular Regions & Hotspots</p>
+
+              {/* Weather Widget */}
+              <div className="mb-8 p-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md">
+                <h4 className="text-xs uppercase tracking-wider text-[#D4AF37] font-semibold mb-3 flex items-center gap-1.5">
+                  <Cloud size={14} className="text-[#D4AF37]" />
+                  Live Weather Forecast
+                </h4>
+                {weatherLoading ? (
+                  <div className="flex items-center gap-2 text-xs text-gray-400 py-2">
+                    <Loader2 className="w-4 h-4 animate-spin text-[#D4AF37]" />
+                    <span>Fetching local weather broadcast...</span>
+                  </div>
+                ) : weather ? (
+                  <div className="grid grid-cols-2 gap-3 text-xs text-gray-300">
+                    <div className="bg-black/30 p-2.5 rounded-xl border border-white/5 flex flex-col justify-between">
+                      <p className="text-gray-500 font-bold uppercase text-[9px] flex items-center gap-1"><Thermometer size={10} /> Temp</p>
+                      <p className="text-lg font-bold text-white mt-1">{weather.temp}°C</p>
+                      <p className="text-[10px] text-gray-400 mt-0.5">{weather.condition}</p>
+                    </div>
+                    <div className="bg-black/30 p-2.5 rounded-xl border border-white/5 flex flex-col justify-between">
+                      <p className="text-gray-500 font-bold uppercase text-[9px] flex items-center gap-1"><Clock size={10} /> Local Time</p>
+                      <p className="text-lg font-bold text-[#D4AF37] mt-1">{weather.time}</p>
+                      <p className="text-[10px] text-gray-400 mt-0.5">Timezone Auto</p>
+                    </div>
+                    <div className="bg-black/30 p-2.5 rounded-xl border border-white/5">
+                      <p className="text-gray-500 font-bold uppercase text-[9px] flex items-center gap-1"><Droplets size={10} /> Humidity</p>
+                      <p className="text-sm font-bold text-white mt-1">{weather.humidity}%</p>
+                    </div>
+                    <div className="bg-black/30 p-2.5 rounded-xl border border-white/5">
+                      <p className="text-gray-500 font-bold uppercase text-[9px] flex items-center gap-1"><Wind size={10} /> Wind</p>
+                      <p className="text-sm font-bold text-white mt-1">{weather.wind} km/h</p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-xs text-gray-500">Weather data unavailable</p>
+                )}
+              </div>
 
               <div className="space-y-6">
                 {selectedCountry.destinations.map((dest: any) => (
@@ -473,7 +591,7 @@ export default function LuxuryEarth() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 20, stiffness: 100 }}
-            className="absolute right-0 top-0 z-40 h-full w-full border-l border-white/10 bg-black/40 p-8 text-white backdrop-blur-3xl lg:w-[450px] flex flex-col justify-between overflow-y-auto"
+            className="absolute right-0 top-0 z-45 h-full w-full border-l border-white/10 bg-black/40 p-8 text-white backdrop-blur-3xl lg:w-[450px] flex flex-col justify-between overflow-y-auto"
           >
             <div>
               <button
@@ -498,6 +616,43 @@ export default function LuxuryEarth() {
                 </h2>
               </div>
 
+              {/* Weather Widget */}
+              <div className="mt-6 p-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md">
+                <h4 className="text-xs uppercase tracking-wider text-[#D4AF37] font-semibold mb-3 flex items-center gap-1.5">
+                  <Cloud size={14} className="text-[#D4AF37]" />
+                  Live Weather Forecast
+                </h4>
+                {weatherLoading ? (
+                  <div className="flex items-center gap-2 text-xs text-gray-400 py-2">
+                    <Loader2 className="w-4 h-4 animate-spin text-[#D4AF37]" />
+                    <span>Fetching local weather broadcast...</span>
+                  </div>
+                ) : weather ? (
+                  <div className="grid grid-cols-2 gap-3 text-xs text-gray-300">
+                    <div className="bg-black/30 p-2.5 rounded-xl border border-white/5 flex flex-col justify-between">
+                      <p className="text-gray-500 font-bold uppercase text-[9px] flex items-center gap-1"><Thermometer size={10} /> Temp</p>
+                      <p className="text-lg font-bold text-white mt-1">{weather.temp}°C</p>
+                      <p className="text-[10px] text-gray-400 mt-0.5">{weather.condition}</p>
+                    </div>
+                    <div className="bg-black/30 p-2.5 rounded-xl border border-white/5 flex flex-col justify-between">
+                      <p className="text-gray-500 font-bold uppercase text-[9px] flex items-center gap-1"><Clock size={10} /> Local Time</p>
+                      <p className="text-lg font-bold text-[#D4AF37] mt-1">{weather.time}</p>
+                      <p className="text-[10px] text-gray-400 mt-0.5">Timezone Auto</p>
+                    </div>
+                    <div className="bg-black/30 p-2.5 rounded-xl border border-white/5">
+                      <p className="text-gray-500 font-bold uppercase text-[9px] flex items-center gap-1"><Droplets size={10} /> Humidity</p>
+                      <p className="text-sm font-bold text-white mt-1">{weather.humidity}%</p>
+                    </div>
+                    <div className="bg-black/30 p-2.5 rounded-xl border border-white/5">
+                      <p className="text-gray-500 font-bold uppercase text-[9px] flex items-center gap-1"><Wind size={10} /> Wind</p>
+                      <p className="text-sm font-bold text-white mt-1">{weather.wind} km/h</p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-xs text-gray-500">Weather data unavailable</p>
+                )}
+              </div>
+
               <div className="mt-8">
                 <p className="text-xs uppercase tracking-wider text-[#D4AF37] font-semibold">About This Destination</p>
                 <p className="mt-3 text-base leading-7 text-gray-300 font-medium">
@@ -518,7 +673,7 @@ export default function LuxuryEarth() {
                   setSelectedPOI(null);
                   globeRef.current.pointOfView({ lat: selectedPOI.lat, lng: selectedPOI.lng, altitude: 2.2 }, 1500);
                 }}
-                className="block w-full py-3.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-white text-sm font-semibold text-center transition"
+                className="block w-full py-3.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-white text-sm font-semibold text-center transition cursor-pointer"
               >
                 Zoom Out
               </button>

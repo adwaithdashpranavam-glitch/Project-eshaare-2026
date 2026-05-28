@@ -3,15 +3,15 @@ import Image from "next/image";
 const destinations = [
   {
     name: "Dubai",
-    image: "/images/Dubai travel.jpg",
+    image: "/images/dubai-travel.webp",
   },
   {
     name: "Thailand",
-    image: "/images/Thailand beach.jpg",
+    image: "/images/thailand-beach.webp",
   },
   {
     name: "Malaysia",
-    image: "/images/Luxury tourism.jpg",
+    image: "/images/luxury-tourism.webp",
   },
 ];
 

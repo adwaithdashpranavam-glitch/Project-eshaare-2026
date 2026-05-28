@@ -9,6 +9,7 @@ import {
     orderBy,
     doc,
     updateDoc,
+    limit,
 } from "firebase/firestore";
 
 type Appointment = {
@@ -24,12 +25,13 @@ type Appointment = {
 export default function AppointmentsAdminPage() {
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         const fetchAppointments = async () => {
             try {
-                // Remove orderBy to avoid index requirement failure
-                const q = query(collection(db, "appointments"));
+                // Limit query to 100 documents to avoid loading too much data
+                const q = query(collection(db, "appointments"), limit(100));
                 const querySnapshot = await getDocs(q);
 
                 const data: (Appointment & { createdAtDate?: Date })[] = [];
@@ -104,6 +106,11 @@ export default function AppointmentsAdminPage() {
         fetchAppointments();
     }, []);
 
+    // Pagination calculations
+    const itemsPerPage = 10;
+    const totalPages = Math.ceil(appointments.length / itemsPerPage) || 1;
+    const paginatedAppts = appointments.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
     const updateStatus = async (id: string, status: string) => {
         try {
             const appointmentRef = doc(db, "appointments", id);
@@ -164,7 +171,7 @@ export default function AppointmentsAdminPage() {
                                     <td colSpan={5} className="px-6 py-12 text-center text-gray-400">No Appointments Found</td>
                                 </tr>
                             ) : (
-                                appointments.map((app) => (
+                                paginatedAppts.map((app) => (
                                     <tr key={app.id} className="transition hover:bg-white/5">
                                         <td className="px-6 py-4">
                                             <div className="font-medium">{app.customerName}</div>
@@ -198,6 +205,34 @@ export default function AppointmentsAdminPage() {
                         </tbody>
                     </table>
                 </div>
+
+                {/* PAGINATION FOOTER CONTROLS */}
+                {appointments.length > 0 && (
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/10 bg-black/25 px-6 py-4 text-xs text-white">
+                        <span className="text-gray-400">
+                            Showing <span className="font-semibold text-white">{Math.min((currentPage - 1) * itemsPerPage + 1, appointments.length)}</span> to <span className="font-semibold text-white">{Math.min(currentPage * itemsPerPage, appointments.length)}</span> of <span className="font-semibold text-white">{appointments.length}</span> appointments
+                        </span>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                disabled={currentPage === 1}
+                                className="rounded-lg bg-white/5 border border-white/10 px-3.5 py-2 hover:bg-white/10 text-white disabled:opacity-40 transition font-semibold"
+                            >
+                                Previous
+                            </button>
+                            <span className="flex items-center px-2 text-gray-300">
+                                Page {currentPage} of {totalPages}
+                            </span>
+                            <button
+                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                disabled={currentPage === totalPages}
+                                className="rounded-lg bg-white/5 border border-white/10 px-3.5 py-2 hover:bg-white/10 text-white disabled:opacity-40 transition font-semibold"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

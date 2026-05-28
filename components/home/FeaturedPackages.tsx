@@ -1,55 +1,21 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
-
-import { db } from "@/lib/firebase";
+import { getCachedFeaturedPackages } from "@/lib/packages";
 import { Package } from "@/types/package";
 import { packages as fallbackPackages } from "@/data/packages";
 
-export default function FeaturedPackages() {
-  const [tourPackages, setTourPackages] = useState<Package[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchPackages = async () => {
-      try {
-        const q = query(
-          collection(db, "packages"),
-          where("active", "==", true),
-          where("featured", "==", true)
-        );
-        const querySnapshot = await getDocs(q);
-
-        let packagesData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Package[];
-
-        if (packagesData.length === 0) {
-          setTourPackages(fallbackPackages as Package[]);
-        } else {
-          setTourPackages(packagesData);
-        }
-      } catch (error) {
-        console.error("Firebase package fetch error, using fallback packages:", error);
-        setTourPackages(fallbackPackages as Package[]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPackages();
-  }, []);
+export default async function FeaturedPackages() {
+  let tourPackages: Package[] = [];
+  try {
+    tourPackages = await getCachedFeaturedPackages();
+    if (tourPackages.length === 0) {
+      tourPackages = fallbackPackages as Package[];
+    }
+  } catch (error) {
+    console.error("Firebase package fetch error, using fallback packages:", error);
+    tourPackages = fallbackPackages as Package[];
+  }
 
   return (
     <section className="bg-[#f5f5f5] px-4 py-20 md:px-8">
@@ -75,46 +41,42 @@ export default function FeaturedPackages() {
           </Link>
         </div>
 
-        {loading ? (
-            <div className="flex justify-center py-10">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#e68932] border-t-transparent"></div>
-            </div>
-        ) : tourPackages.length === 0 ? (
+        {tourPackages.length === 0 ? (
           <p className="text-gray-500 py-10 text-center">
             No featured active packages found.
           </p>
         ) : (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {tourPackages.map((tour) => (
-                <Link
+              <Link
                 key={tour.id}
-                href="/packages"
+                href={`/packages/${tour.slug}`}
                 className="group relative overflow-hidden rounded-[26px] shadow-xl"
-                >
+              >
                 <div className="relative h-[360px] w-full overflow-hidden">
-                    <Image
+                  <Image
                     src={tour.image || "/images/placeholder.jpg"}
                     alt={tour.title || "Tour Package"}
                     fill
                     sizes="(max-width: 768px) 100vw, 25vw"
                     className="object-cover transition duration-700 group-hover:scale-110"
-                    />
+                  />
 
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/10" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/10" />
 
-                    <div className="absolute bottom-7 left-0 w-full text-center">
+                  <div className="absolute bottom-7 left-0 w-full text-center">
                     <h3 className="text-3xl font-bold text-white drop-shadow-lg px-4">
-                        {tour.destination || tour.title}
+                      {tour.destination || tour.title}
                     </h3>
 
                     <p className="mt-2 text-xs font-semibold uppercase tracking-[4px] text-white/90">
-                        Explore
+                      Explore
                     </p>
-                    </div>
+                  </div>
                 </div>
-                </Link>
+              </Link>
             ))}
-            </div>
+          </div>
         )}
 
         <div className="mt-10 flex justify-center md:hidden">
@@ -130,4 +92,4 @@ export default function FeaturedPackages() {
       </div>
     </section>
   );
-}
+}

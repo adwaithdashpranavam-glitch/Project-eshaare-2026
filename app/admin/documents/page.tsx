@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, collectionGroup } from "firebase/firestore";
 import { Search, FolderOpen, Download, CheckCircle, AlertCircle, FileText } from "lucide-react";
 
 type DocumentRecord = {
@@ -28,49 +28,52 @@ export default function AdminDocumentsVaultPage() {
             try {
                 const docRecords: DocumentRecord[] = [];
 
-                // 1. Fetch leads
-                const leadsSnap = await getDocs(collection(db, "leads"));
-                const leadPromises = leadsSnap.docs.map(async (leadDoc) => {
-                    const leadData = leadDoc.data();
-                    const subCollSnap = await getDocs(collection(db, "leads", leadDoc.id, "documents"));
-                    subCollSnap.forEach((subDoc) => {
-                        const file = subDoc.data();
-                        docRecords.push({
-                            id: subDoc.id,
-                            name: file.name || "Unnamed File",
-                            url: file.url || "",
-                            type: file.type || "General Document",
-                            verified: !!file.verified,
-                            uploadedAt: file.uploadedAt || new Date().toISOString(),
-                            parentType: "leads",
-                            parentId: leadDoc.id,
-                            parentName: leadData.name || "Lead Client",
-                        });
-                    });
+                // 1. Fetch leads and visa applications in parallel to build lookup maps
+                const [leadsSnap, visasSnap] = await Promise.all([
+                    getDocs(collection(db, "leads")),
+                    getDocs(collection(db, "visaApplications"))
+                ]);
+
+                const leadsMap = new Map<string, string>();
+                leadsSnap.forEach((docItem) => {
+                    leadsMap.set(docItem.id, docItem.data().name || "Lead Client");
                 });
 
-                // 2. Fetch visa applications
-                const visasSnap = await getDocs(collection(db, "visaApplications"));
-                const visaPromises = visasSnap.docs.map(async (visaDoc) => {
-                    const visaData = visaDoc.data();
-                    const subCollSnap = await getDocs(collection(db, "visaApplications", visaDoc.id, "documents"));
-                    subCollSnap.forEach((subDoc) => {
-                        const file = subDoc.data();
-                        docRecords.push({
-                            id: subDoc.id,
-                            name: file.name || "Unnamed File",
-                            url: file.url || "",
-                            type: file.type || "General Document",
-                            verified: !!file.verified,
-                            uploadedAt: file.uploadedAt || new Date().toISOString(),
-                            parentType: "visaApplications",
-                            parentId: visaDoc.id,
-                            parentName: visaData.applicantName || "Visa Applicant",
-                        });
-                    });
+                const visasMap = new Map<string, string>();
+                visasSnap.forEach((docItem) => {
+                    visasMap.set(docItem.id, docItem.data().applicantName || "Visa Applicant");
                 });
 
-                await Promise.all([...leadPromises, ...visaPromises]);
+                // 2. Fetch all nested documents in one single query using collectionGroup
+                const documentsSnap = await getDocs(collectionGroup(db, "documents"));
+                
+                documentsSnap.forEach((subDoc) => {
+                    const file = subDoc.data();
+                    const parentDocRef = subDoc.ref.parent.parent;
+                    if (!parentDocRef) return;
+
+                    const parentId = parentDocRef.id;
+                    const parentType = parentDocRef.parent.id as "leads" | "visaApplications";
+                    
+                    let parentName = "Client Record";
+                    if (parentType === "leads") {
+                        parentName = leadsMap.get(parentId) || "Lead Client";
+                    } else if (parentType === "visaApplications") {
+                        parentName = visasMap.get(parentId) || "Visa Applicant";
+                    }
+
+                    docRecords.push({
+                        id: subDoc.id,
+                        name: file.name || "Unnamed File",
+                        url: file.url || "",
+                        type: file.type || "General Document",
+                        verified: !!file.verified,
+                        uploadedAt: file.uploadedAt || new Date().toISOString(),
+                        parentType,
+                        parentId,
+                        parentName,
+                    });
+                });
                 
                 // Sort by uploadedAt descending
                 docRecords.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());

@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { Menu, X, MapPin, Phone, ChevronDown, ChevronRight, ArrowLeft } from "lucide-react";
+import { onAuthStateChanged, signOut, User as FirebaseUser } from "firebase/auth";
+import { auth, db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 const navData = [
   {
@@ -13,7 +16,6 @@ const navData = [
         title: "Visa Services",
         links: ["Schengen Visa", "UAE Visa", "UK Visa", "USA Visa", "Canada Visa", "Australia Visa", "Saudi Visa"]
       },
-
       {
         title: "Holiday Packages",
         links: ["Europe Tours", "Maldives Packages", "Thailand Packages", "Bali Packages", "Turkey Packages", "Georgia Packages", "Japan Packages", "Honeymoon Packages", "Luxury Tours"]
@@ -24,7 +26,7 @@ const navData = [
       },
       {
         title: "Hotels",
-        links: ["Luxury Hotels", "Resorts", "Villas", "Family Resorts"]
+        links: [] // Removed sub-dropdown links to route directly to main hotels page
       },
       {
         title: "Dubai Experiences",
@@ -58,24 +60,14 @@ const toSlug = (text: string) => {
   if (t === "Appointment Booking") return "/appointments";
   if (t === "Enquiry Form" || t === "Enquire Now" || t === "Start Your Journey" || t === "Package Customization" || t === "Flight Enquiry" || t === "Hotel Enquiry") return "/#inquiry";
 
-  // Specific Visa page mappings
-  if (t === "Schengen Visa") return "/visa/schengen";
-  if (t === "UK Visa") return "/visa/uk";
-  if (t === "USA Visa") return "/visa/usa";
-  if (t === "Japan Visa") return "/visa/japan";
-  if (t === "UAE Visa") return "/visa/uae";
-  if (t === "Canada Visa") return "/visa/canada";
-  if (t === "Australia Visa") return "/visa/australia";
-  if (t === "Saudi Visa") return "/visa/saudi";
-
-  // Visa Services main landing page
-  if (t === "Visa Services" || t === "Visa Consultation") return "/visa";
-  if (t.endsWith("Visa")) {
-    const country = t.slice(0, -5).trim().toLowerCase().replace(/ /g, "-");
-    return `/visa/${country}`;
+  // TASK 3: Redirect ANY Visa service dropdown item to the main visa page /visa ONLY.
+  if (t === "Schengen Visa" || t === "UK Visa" || t === "USA Visa" || t === "Japan Visa" ||
+    t === "UAE Visa" || t === "Canada Visa" || t === "Australia Visa" || t === "Saudi Visa" ||
+    t === "Visa Services" || t === "Visa Consultation" || t.endsWith("Visa")) {
+    return "/visa";
   }
 
-  // Specific Packages redirect to the main packages page (/packages) as per requirement
+  // Specific Packages redirect to the main packages page (/packages)
   if (t === "Holiday Packages" || t.endsWith("Packages") || t.endsWith("Tours") || t === "Japan Packages" || t === "Thailand Packages" || t === "Maldives Packages" || t === "Europe Tours") return "/packages";
 
   // Flights
@@ -87,8 +79,13 @@ const toSlug = (text: string) => {
   // Insurance
   if (t === "Travel Insurance" || t === "Apply Online" || t === "Request Callback") return "/insurance";
 
-  // Dubai Experiences / Holidays / Tours
-  if (t === "Dubai Experiences" || t === "Desert Safari" || t === "Burj Khalifa" || t === "Yacht Rental" || t === "Ferrari World" || t === "Marina Cruise" || t === "Abu Dhabi Tours") return "/tours";
+  // Dubai Experiences Category Header
+  if (t === "Dubai Experiences") return "/dubai";
+
+  // Dubai subcategories map to their individual package detail pages
+  if (t === "Desert Safari" || t === "Burj Khalifa" || t === "Yacht Rental" || t === "Ferrari World" || t === "Marina Cruise" || t === "Abu Dhabi Tours") {
+    return `/packages/${t.toLowerCase().replace(/ /g, '-')}`;
+  }
 
   // WhatsApp Support
   if (t === "WhatsApp Support") return "https://wa.me/971501234567?text=Hi ESHAARE, I need travel assistance.";
@@ -110,14 +107,41 @@ export default function Navbar() {
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const [mobileSubExpanded, setMobileSubExpanded] = useState<string | null>(null);
 
+  // Client authentication state
+  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [userName, setUserName] = useState<string>("");
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
 
     window.addEventListener("scroll", handleScroll);
-
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        setUserName(currentUser.displayName || currentUser.email?.split("@")[0] || "Guest");
+        try {
+          const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+          if (userDoc.exists()) {
+            const data = userDoc.data();
+            if (data?.name) {
+              setUserName(data.name);
+            }
+          }
+        } catch (err) {
+          console.error("Error fetching user profile:", err);
+        }
+      } else {
+        setUserName("");
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const toggleMobileNav = (title: string) => {
@@ -130,13 +154,45 @@ export default function Navbar() {
     }
   };
 
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      router.push("/");
+    } catch (err) {
+      console.error("Error during logout:", err);
+    }
+  };
+
   return (
     <header
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled
-          ? "bg-gray-100/95 backdrop-blur-md shadow-sm"
-          : "bg-white/90 backdrop-blur-xl shadow-md border-b border-gray-100"
+        ? "bg-gray-100/95 backdrop-blur-md shadow-sm"
+        : "bg-white/90 backdrop-blur-xl shadow-md border-b border-gray-100"
         }`}
     >
+      {/* TASK 1: Show "Welcome, {name}" in the top area after login */}
+      {user && (
+        <div className="bg-gradient-to-r from-[#060e1a] via-[#0b1626] to-[#060e1a] text-gray-300 text-xs py-2 px-4 xl:px-8 flex items-center justify-between border-b border-amber-500/10 font-medium tracking-wide shadow-sm">
+          <div className="flex items-center gap-1.5">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+            <span>Welcome, <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e68932] to-amber-300 font-extrabold uppercase tracking-wider">{userName}</span></span>
+          </div>
+          {/* <div className="flex items-center gap-5">
+            <Link href="/dashboard" className="hover:text-[#e68932] text-[11px] uppercase tracking-wider font-bold transition duration-300 flex items-center gap-1">
+              <span className="w-1 h-1 rounded-full bg-white/20" />
+              Portal Dashboard
+            </Link>
+            <span className="text-white/10">|</span>
+            <button
+              onClick={handleSignOut}
+              className="hover:text-red-400 text-[11px] uppercase tracking-wider font-bold transition duration-300 cursor-pointer flex items-center gap-1 bg-transparent border-none"
+            >
+              Log Out
+            </button>
+          </div> */}
+        </div>
+      )}
+
       <div className="max-w-[95rem] mx-auto px-4 xl:px-6 h-20 flex items-center justify-between">
         {/* Logo & Back Button Section */}
         <div className="flex items-center gap-3">
@@ -226,6 +282,23 @@ export default function Navbar() {
 
         {/* Desktop Buttons */}
         <div className="hidden lg:flex items-center gap-4 shrink-0">
+          {/* TASK 1: Add a new button named "Login" beside "Enquire Now" button. Redirect to dashboard if logged in. */}
+          {!user ? (
+            <Link
+              href="/login"
+              className="h-11 border border-[#e68932] hover:bg-[#e68932]/10 text-gray-800 px-6 rounded-full font-semibold text-sm flex items-center justify-center transition-all duration-300"
+            >
+              Login
+            </Link>
+          ) : (
+            <Link
+              href="/dashboard"
+              className="h-11 border border-gray-300 hover:bg-gray-100 text-gray-800 px-6 rounded-full font-semibold text-sm flex items-center justify-center transition-all duration-300"
+            >
+              Dashboard
+            </Link>
+          )}
+
           <Link href="/#inquiry" className="group relative flex items-center gap-2 h-11 bg-[#e68932] border border-[#e68932] text-white px-5 rounded-full font-semibold text-sm hover:bg-[#cf7726] transition-all duration-300 overflow-hidden shadow-md">
             <Phone className="h-4 w-4" />
             <span>Enquire Now</span>
@@ -318,6 +391,17 @@ export default function Navbar() {
             ))}
 
             <div className="mt-6 flex flex-col gap-3">
+              {!user ? (
+                <Link href="/login" className="border border-[#e68932] text-gray-800 py-3 rounded-full text-center font-semibold text-sm"
+                  onClick={() => setOpen(false)}>
+                  Login / Register
+                </Link>
+              ) : (
+                <Link href="/dashboard" className="border border-gray-300 text-gray-800 py-3 rounded-full text-center font-semibold text-sm"
+                  onClick={() => setOpen(false)}>
+                  Client Dashboard
+                </Link>
+              )}
               <Link href="/#inquiry" className="bg-[#e68932] text-white py-3 rounded-full text-center font-semibold text-sm shadow-md"
                 onClick={() => setOpen(false)}>
                 Enquire Now

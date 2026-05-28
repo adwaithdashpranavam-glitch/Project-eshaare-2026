@@ -3,42 +3,50 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import "@fontsource/pinyon-script";
 
 const slides = [
   {
     id: 1,
     video: "/videos/burj khalifa in dubai.mp4",
+    image: "/images/dubai-travel.webp",
     title: "BURJ KHALIFA",
   },
   {
     id: 2,
     video: "/videos/dubai united arab emirates.mp4",
+    image: "/images/dubai-travel.webp",
     title: "DUBAI",
   },
   {
     id: 3,
     video: "/videos/kawazu town japan.mp4",
+    image: "/images/japan.webp",
     title: "KAWAZU TOWN",
   },
   {
     id: 4,
     video: "/videos/komodo island indonesia.mp4",
+    image: "/images/thailand-beach.webp",
     title: "KOMODO ISLAND",
   },
   {
     id: 5,
     video: "/videos/lake bohinj in slovenia.mp4",
+    image: "/images/switzerland.webp",
     title: "LAKE BOHINJ",
   },
   {
     id: 6,
     video: "/videos/lauterbrunnen valley of switzerland.mp4",
+    image: "/images/switzerland.webp",
     title: "LAUTERBRUNNEN",
   },
   {
     id: 7,
     video: "/videos/Seoul South Korea.mp4",
+    image: "/images/japan.webp",
     title: "SEOUL",
   },
 ];
@@ -46,10 +54,23 @@ const slides = [
 export default function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loadedIndices, setLoadedIndices] = useState<number[]>([0, 1]);
+  const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+
+  useEffect(() => {
+    setMounted(true);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Progressive preloading of the next slide in sequence
   useEffect(() => {
+    if (isMobile) return;
     setLoadedIndices((prev) => {
       const nextIdx = (currentSlide + 1) % slides.length;
       if (prev.includes(currentSlide) && prev.includes(nextIdx)) {
@@ -60,7 +81,7 @@ export default function Hero() {
       if (!nextList.includes(nextIdx)) nextList.push(nextIdx);
       return nextList;
     });
-  }, [currentSlide]);
+  }, [currentSlide, isMobile]);
 
   // Auto transition slide every 6 seconds
   useEffect(() => {
@@ -73,6 +94,7 @@ export default function Hero() {
 
   // Control video playback based on active slide
   useEffect(() => {
+    if (isMobile || !mounted) return;
     videoRefs.current.forEach((video, index) => {
       if (video) {
         if (index === currentSlide) {
@@ -84,30 +106,43 @@ export default function Hero() {
         }
       }
     });
-  }, [currentSlide]);
+  }, [currentSlide, isMobile, mounted]);
 
   return (
     <section className="relative w-full h-screen bg-[#071120] overflow-hidden">
       {/* VISUAL BACKGROUND LAYER */}
       <div className="absolute inset-0 overflow-hidden">
-        {slides.map((slide, index) => {
-          const isLoaded = loadedIndices.includes(index);
-          return (
-            <video
-              key={slide.id}
-              ref={(el) => {
-                videoRefs.current[index] = el;
-              }}
-              src={isLoaded ? slide.video : undefined}
-              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
-                index === currentSlide ? "opacity-100" : "opacity-0"
-              }`}
-              loop
-              muted
-              playsInline
+        {!mounted || isMobile ? (
+          <div className="relative h-full w-full">
+            <Image
+              src={slides[currentSlide].image}
+              alt={slides[currentSlide].title}
+              fill
+              priority={currentSlide === 0}
+              className="object-cover transition-opacity duration-1000"
+              sizes="100vw"
             />
-          );
-        })}
+          </div>
+        ) : (
+          slides.map((slide, index) => {
+            const isLoaded = loadedIndices.includes(index);
+            return (
+              <video
+                key={slide.id}
+                ref={(el) => {
+                  videoRefs.current[index] = el;
+                }}
+                src={isLoaded ? slide.video : undefined}
+                className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+                  index === currentSlide ? "opacity-100" : "opacity-0"
+                }`}
+                loop
+                muted
+                playsInline
+              />
+            );
+          })
+        )}
       </div>
 
       {/* DARK OVERLAY */}

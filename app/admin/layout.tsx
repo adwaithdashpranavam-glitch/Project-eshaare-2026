@@ -169,6 +169,18 @@ export default function AdminLayout({
                             Packages
                         </Link>
                         <Link
+                            href="/admin/hotels"
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/hotels') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                        >
+                            Hotels Stay
+                        </Link>
+                        <Link
+                            href="/admin/offers"
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/offers') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                        >
+                            Promotional Offers
+                        </Link>
+                        <Link
                             href="/admin/leads"
                             className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/leads') && !pathname.includes('/admin/leads/') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
                         >
@@ -191,6 +203,12 @@ export default function AdminLayout({
                             className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/accounts') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
                         >
                             Accounts (Corp/Agent)
+                        </Link>
+                        <Link
+                            href="/admin/users"
+                            className={`block rounded-xl px-4 py-2 text-sm transition-colors ${pathname.includes('/admin/users') ? 'bg-[#e68932]/10 text-[#e68932]' : 'hover:bg-white/5 text-gray-300 hover:text-white'}`}
+                        >
+                            Client Accounts & Logs
                         </Link>
                         <Link
                             href="/admin/travellers"

@@ -4,27 +4,27 @@ import Link from "next/link";
 const destinations = [
   {
     name: "Switzerland",
-    image: "/images/destinations/Switzerland.jpg",
+    image: "/images/switzerland.webp",
   },
   {
     name: "Japan",
-    image: "/images/destinations/japan.jpg",
+    image: "/images/japan.webp",
   },
   {
     name: "Maldives",
-    image: "/images/destinations/maldives.jpg",
+    image: "/images/maldives.webp",
   },
   {
     name: "Thailand",
-    image: "/images/destinations/Thailand beach.jpg",
+    image: "/images/thailand-beach.webp",
   },
   {
     name: "Georgia",
-    image: "/images/destinations/georgia.jpg",
+    image: "/images/georgia.webp",
   },
   {
     name: "Dubai",
-    image: "/images/Dubai travel.jpg",
+    image: "/images/dubai-travel.webp",
   },
 ];
 
@@ -49,7 +49,7 @@ export default function FeaturedDestinations() {
           {destinations.map((item) => (
             <Link
               key={item.name}
-              href="/packages"
+              href={item.name === "Dubai" ? "/dubai" : "/packages"}
               className="relative h-72 overflow-hidden rounded-3xl group border border-white/10 block"
             >
 

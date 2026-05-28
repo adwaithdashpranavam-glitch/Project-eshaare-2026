@@ -11,6 +11,7 @@ import {
     query,
     updateDoc,
     doc,
+    limit,
 } from "firebase/firestore";
 
 type Lead = {
@@ -44,11 +45,18 @@ export default function LeadsPage() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("All");
+    const [currentPage, setCurrentPage] = useState(1);
+
+    // Reset pagination when filter or search changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, statusFilter]);
 
     useEffect(() => {
         const fetchLeads = async () => {
             try {
-                const q = query(collection(db, "leads"));
+                // Limit query to 100 documents to avoid overloading and slow page loading
+                const q = query(collection(db, "leads"), limit(100));
                 const querySnapshot = await getDocs(q);
 
                 const leadsData: Lead[] = [];
@@ -172,6 +180,11 @@ export default function LeadsPage() {
         return matchesSearch && matchesStatus;
     });
 
+    // Pagination calculations
+    const itemsPerPage = 10;
+    const totalPages = Math.ceil(filteredLeads.length / itemsPerPage) || 1;
+    const paginatedLeads = filteredLeads.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
     // DASHBOARD METRICS
     const totalLeads = leads.length;
     const today = new Date();
@@ -280,7 +293,7 @@ export default function LeadsPage() {
                                     <td colSpan={6} className="px-6 py-12 text-center text-gray-400">No matching leads found.</td>
                                 </tr>
                             ) : (
-                                filteredLeads.map((lead) => (
+                                paginatedLeads.map((lead) => (
                                     <tr key={lead.id} className="transition hover:bg-white/5">
                                         <td className="px-6 py-4">
                                             <div>
@@ -344,6 +357,34 @@ export default function LeadsPage() {
                         </tbody>
                     </table>
                 </div>
+
+                {/* PAGINATION FOOTER CONTROLS */}
+                {filteredLeads.length > 0 && (
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/10 bg-black/25 px-6 py-4 text-xs">
+                        <span className="text-gray-400">
+                            Showing <span className="font-semibold text-white">{Math.min((currentPage - 1) * itemsPerPage + 1, filteredLeads.length)}</span> to <span className="font-semibold text-white">{Math.min(currentPage * itemsPerPage, filteredLeads.length)}</span> of <span className="font-semibold text-white">{filteredLeads.length}</span> leads
+                        </span>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                disabled={currentPage === 1}
+                                className="rounded-lg bg-white/5 border border-white/10 px-3.5 py-2 hover:bg-white/10 text-white disabled:opacity-40 transition font-semibold"
+                            >
+                                Previous
+                            </button>
+                            <span className="flex items-center px-2 text-gray-300">
+                                Page {currentPage} of {totalPages}
+                            </span>
+                            <button
+                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                disabled={currentPage === totalPages}
+                                className="rounded-lg bg-white/5 border border-white/10 px-3.5 py-2 hover:bg-white/10 text-white disabled:opacity-40 transition font-semibold"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

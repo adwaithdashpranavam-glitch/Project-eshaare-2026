@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 import {
   Home,
@@ -16,7 +18,15 @@ import {
 export default function BottomNavbar() {
   const [openSearch, setOpenSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsLoggedIn(!!user);
+    });
+    return () => unsubscribe();
+  }, []);
 
   return (
     <>
@@ -90,9 +100,9 @@ export default function BottomNavbar() {
             <span>Events</span>
           </Link>
 
-          {/* ACCOUNT */}
+          {/* ACCOUNT - TASK 1: Redirect to client dashboard if logged in, redirect to login page if not. */}
           <Link
-            href="/login"
+            href={isLoggedIn ? "/dashboard" : "/login"}
             prefetch={false}
             className="flex flex-col items-center justify-center gap-1 text-xs text-gray-700 transition hover:text-[#e68932]"
           >

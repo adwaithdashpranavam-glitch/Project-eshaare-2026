@@ -19,4 +19,5 @@ export type Package = {
     inclusions?: string[];
     exclusions?: string[];
     supplier?: string;
+    parentId?: string;
 };
