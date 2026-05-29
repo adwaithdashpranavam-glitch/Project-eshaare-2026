@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-
+import { useTranslation } from "@/lib/TranslationContext";
 
 const packages = [
   {
@@ -31,9 +31,35 @@ const packages = [
     image:
       "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop",
   },
+  {
+    title: "Schengen",
+    type: "Tourist Visa",
+    image:
+      "https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?q=80&w=1200&auto=format&fit=crop",
+  },
+  {
+    title: "United Kingdom",
+    type: "Standard Visitor Visa",
+    image:
+      "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=1200&auto=format&fit=crop",
+  },
+  {
+    title: "Japan",
+    type: "Tourist Visa",
+    image:
+      "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=1200&auto=format&fit=crop",
+  },
+  {
+    title: "Singapore",
+    type: "e-Visa",
+    image:
+      "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?q=80&w=1200&auto=format&fit=crop",
+  },
 ];
 
 export default function PackageSlider() {
+  const { t } = useTranslation();
+
   return (
     <section className="w-full overflow-hidden py-16 bg-white">
       <div className="mx-auto max-w-[90%]">
@@ -41,11 +67,11 @@ export default function PackageSlider() {
         <div className="flex items-center justify-between mb-10">
           <div>
             <h2 className="text-4xl md:text-5xl font-bold text-[#071120]">
-              Visa Services
+              {t("Visa Services")}
             </h2>
 
             <p className="text-gray-500 mt-3 text-lg">
-              Explore seamless visa processing for global destinations
+              {t("Explore seamless visa processing for global destinations")}
             </p>
           </div>
 
@@ -64,93 +90,89 @@ export default function PackageSlider() {
               shadow-lg shadow-[#d4af37]/20
             "
           >
-            View More
-            <ArrowRight className="w-4 h-4" />
+            {t("View More")}
+            <ArrowRight className="w-4 h-4 rtl:rotate-180" />
           </Link>
         </div>
 
         {/* SLIDER */}
         <div className="relative overflow-hidden w-full">
-          <div className="flex w-max animate-scroll-quarter hover:[animation-play-state:paused]">
-            {Array.from({ length: 4 }).map((_, setIdx) => (
-              <div key={`set-${setIdx}`} className="flex gap-6 pr-6 shrink-0">
-                {packages.map((item, index) => (
-                  <div
-                    key={`item-${setIdx}-${index}`}
+          <div className="flex w-max animate-scroll hover:[animation-play-state:paused] gap-6">
+            {[...packages, ...packages].map((item, index) => (
+              <div
+                key={`item-${index}`}
+                className="
+                  w-[260px]
+                  md:w-[320px]
+                  rounded-[30px]
+                  overflow-hidden
+                  relative
+                  group
+                  bg-white
+                  border border-gray-200
+                  hover:border-[#d4af37]/40
+                  transition-all duration-500
+                  hover:-translate-y-2
+                  flex-shrink-0
+                  shadow-sm
+                  hover:shadow-2xl
+                "
+              >
+                {/* IMAGE */}
+                <div className="relative h-[220px] overflow-hidden">
+                  <Image
+                    src={item.image}
+                    alt={t(item.title)}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="
-                      w-[260px]
-                      md:w-[320px]
-                      rounded-[30px]
-                      overflow-hidden
-                      relative
-                      group
-                      bg-white
-                      border border-gray-200
-                      hover:border-[#d4af37]/40
-                      transition-all duration-500
-                      hover:-translate-y-2
-                      flex-shrink-0
-                      shadow-sm
-                      hover:shadow-2xl
+                      object-cover
+                      group-hover:scale-110
+                      transition-transform duration-700
+                    "
+                  />
+
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#071120] via-black/20 to-transparent" />
+
+                  {/* Title */}
+                  <div className="absolute bottom-5 left-5 right-5 text-left rtl:text-right">
+                    <h3 className="text-3xl font-bold text-white">
+                      {t(item.title)}
+                    </h3>
+
+                    <p className="text-white/80 text-sm mt-1">
+                      {t(item.type)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* CONTENT */}
+                <div className="p-6 text-left rtl:text-right">
+                  <p className="text-gray-600 leading-relaxed text-sm">
+                    {t("Get hassle-free and quick visa processing for your travel to")} {t(item.title)}.
+                  </p>
+
+                  <Link
+                    href={`/visa/${item.title.toLowerCase().replace(/ /g, "-")}`}
+                    className="
+                      mt-6 w-full text-center block
+                      bg-gradient-to-r
+                      from-[#d49237]
+                      via-[#f4d06f]
+                      to-[#d4af37]
+                      text-[#071120]
+                      py-3.5
+                      rounded-2xl
+                      font-semibold
+                      hover:scale-[1.02]
+                      transition-all duration-300
+                      shadow-lg shadow-[#d4af37]/20
                     "
                   >
-                    {/* IMAGE */}
-                    <div className="relative h-[220px] overflow-hidden">
-                      <Image
-                        src={item.image}
-                        alt={item.title}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="
-                          object-cover
-                          group-hover:scale-110
-                          transition-transform duration-700
-                        "
-                      />
-
-                      {/* Gradient Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#071120] via-black/20 to-transparent" />
-
-                      {/* Title */}
-                      <div className="absolute bottom-5 left-5">
-                        <h3 className="text-3xl font-bold text-white">
-                          {item.title}
-                        </h3>
-
-                        <p className="text-white/80 text-sm mt-1">
-                          {item.type}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* CONTENT */}
-                    <div className="p-6">
-                      <p className="text-gray-600 leading-relaxed text-sm">
-                        Get hassle-free and quick visa processing for your travel to {item.title}.
-                      </p>
-
-                      <Link
-                        href="/visa"
-                        className="
-                          mt-6 w-full text-center block
-                          bg-gradient-to-r
-                          from-[#d49237]
-                          via-[#f4d06f]
-                          to-[#d4af37]
-                          text-[#071120]
-                          py-3.5
-                          rounded-2xl
-                          font-semibold
-                          hover:scale-[1.02]
-                          transition-all duration-300
-                          shadow-lg shadow-[#d4af37]/20
-                        "
-                      >
-                        Apply for Visa
-                      </Link>
-                    </div>
-                  </div>
-                ))}
+                    {t("Apply for Visa")}
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
@@ -169,11 +191,11 @@ export default function PackageSlider() {
               font-semibold
             "
           >
-            View More
-            <ArrowRight className="w-4 h-4" />
+            {t("View More")}
+            <ArrowRight className="w-4 h-4 rtl:rotate-180" />
           </Link>
         </div>
       </div>
     </section>
   );
-}
+}

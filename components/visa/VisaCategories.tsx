@@ -1,8 +1,9 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { getCachedVisaCategories, VisaCategory } from "@/lib/cms";
 
-const categories = [
+const fallbackCategories = [
   { 
     name: "Schengen Visa", 
     image: "https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?q=80&w=600&auto=format&fit=crop", 
@@ -59,7 +60,18 @@ const categories = [
   },
 ];
 
-export default function VisaCategories() {
+export default async function VisaCategories() {
+  let categories: VisaCategory[] = [];
+  try {
+    categories = await getCachedVisaCategories();
+    if (categories.length === 0) {
+      categories = fallbackCategories;
+    }
+  } catch (error) {
+    console.error("Firebase visa category fetch error, using fallbacks:", error);
+    categories = fallbackCategories;
+  }
+
   return (
     <section id="categories" className="py-20 px-4 md:px-8 bg-[#071120]">
       <div className="max-w-7xl mx-auto">

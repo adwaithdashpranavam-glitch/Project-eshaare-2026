@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getCachedDestinations, Destination } from "@/lib/cms";
 
-const destinations = [
+const fallbackDestinations = [
   {
     name: "Switzerland",
     image: "/images/switzerland.webp",
@@ -28,7 +29,18 @@ const destinations = [
   },
 ];
 
-export default function FeaturedDestinations() {
+export default async function FeaturedDestinations() {
+  let destinations: Destination[] = [];
+  try {
+    destinations = await getCachedDestinations();
+    if (destinations.length === 0) {
+      destinations = fallbackDestinations;
+    }
+  } catch (error) {
+    console.error("Firebase destination fetch error, using fallbacks:", error);
+    destinations = fallbackDestinations;
+  }
+
   return (
     <section className="bg-[#f5f5f5] px-4 py-20 md:px-8">
 

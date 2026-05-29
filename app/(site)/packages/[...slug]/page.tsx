@@ -5,6 +5,7 @@ import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { notFound } from "next/navigation";
 import Footer from "@/components/layout/Footer";
+import type { Metadata } from "next";
 import { 
   ChevronRight, 
   MapPin, 
@@ -19,6 +20,40 @@ import {
 
 interface PageProps {
   params: Promise<{ slug: string[] }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  if (!slug || slug.length === 0) return { title: "Holiday Packages | Eshaare Tour" };
+  const targetSlug = slug[slug.length - 1];
+  
+  try {
+    const pkg = await getCachedPackageBySlug(targetSlug);
+    if (!pkg) return { title: "Package Details | Eshaare Tour" };
+    
+    const pageTitle = `${pkg.title} | Eshaare Tour`;
+    const pageDesc = pkg.overview?.substring(0, 160) || `Book the premium holiday package: ${pkg.title} with Eshaare Tour.`;
+    
+    return {
+      title: pageTitle,
+      description: pageDesc,
+      openGraph: {
+        title: pageTitle,
+        description: pageDesc,
+        images: pkg.image ? [{ url: pkg.image, alt: pkg.title }] : [],
+        type: "website"
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: pageTitle,
+        description: pageDesc,
+        images: pkg.image ? [pkg.image] : []
+      }
+    };
+  } catch (err) {
+    console.error("SEO metadata fetch error:", err);
+    return { title: "Package Details | Eshaare Tour" };
+  }
 }
 
 export default async function DynamicPackageDetails({ params }: PageProps) {

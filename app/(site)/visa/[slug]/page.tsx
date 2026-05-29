@@ -1,8 +1,40 @@
 import Footer from "@/components/layout/Footer";
 import VisaCTA from "@/components/visa/VisaCTA";
+import type { Metadata } from "next";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const rawCountry = slug.replace(/-/g, " ");
+  const countryName = rawCountry.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+  
+  const pageTitle = `${countryName} Visa Services from UAE | Eshaare Tour`;
+  const pageDesc = `Get hassle-free ${countryName} visa processing services from Dubai, UAE. We assist you with document checklist verification, application completion, and embassy scheduling.`;
+  
+  return {
+    title: pageTitle,
+    description: pageDesc,
+    openGraph: {
+      title: pageTitle,
+      description: pageDesc,
+      type: "website",
+      images: [
+        {
+          url: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=1200",
+          alt: `${countryName} Visa Assistance`
+        }
+      ]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: pageTitle,
+      description: pageDesc,
+      images: ["https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=1200"]
+    }
+  };
 }
 
 export default async function DynamicVisaPage({ params }: PageProps) {

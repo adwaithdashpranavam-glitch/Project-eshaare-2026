@@ -56,6 +56,7 @@ export default function Hero() {
   const [loadedIndices, setLoadedIndices] = useState<number[]>([0, 1]);
   const [isMobile, setIsMobile] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [videoReady, setVideoReady] = useState<boolean[]>(new Array(slides.length).fill(false));
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   useEffect(() => {
@@ -112,33 +113,54 @@ export default function Hero() {
     <section className="relative w-full h-screen bg-[#071120] overflow-hidden">
       {/* VISUAL BACKGROUND LAYER */}
       <div className="absolute inset-0 overflow-hidden">
-        {!mounted || isMobile ? (
-          <div className="relative h-full w-full">
-            <Image
-              src={slides[currentSlide].image}
-              alt={slides[currentSlide].title}
-              fill
-              priority={currentSlide === 0}
-              className="object-cover transition-opacity duration-1000"
-              sizes="100vw"
-            />
-          </div>
-        ) : (
+        {/* Always render optimized image placeholders for smooth cross-fades and instant LCP paint */}
+        {slides.map((slide, index) => {
+          const isActive = index === currentSlide;
+          return (
+            <div
+              key={`img-${slide.id}`}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                isActive ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <Image
+                src={slide.image}
+                alt={slide.title}
+                fill
+                priority={index === 0}
+                quality={55} // highly optimized for fast visual paint
+                className="object-cover"
+                sizes="100vw"
+              />
+            </div>
+          );
+        })}
+
+        {/* Video overlay layer for desktop */}
+        {mounted && !isMobile && (
           slides.map((slide, index) => {
             const isLoaded = loadedIndices.includes(index);
+            const isActive = index === currentSlide;
             return (
               <video
-                key={slide.id}
+                key={`vid-${slide.id}`}
                 ref={(el) => {
                   videoRefs.current[index] = el;
                 }}
                 src={isLoaded ? slide.video : undefined}
                 className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
-                  index === currentSlide ? "opacity-100" : "opacity-0"
+                  isActive && videoReady[index] ? "opacity-100" : "opacity-0"
                 }`}
                 loop
                 muted
                 playsInline
+                onLoadedData={() => {
+                  setVideoReady((prev) => {
+                    const next = [...prev];
+                    next[index] = true;
+                    return next;
+                  });
+                }}
               />
             );
           })

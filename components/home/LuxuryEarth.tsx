@@ -14,7 +14,7 @@ const cities = citiesData as any[];
 
 // GLOBE
 const Globe = dynamic(
-  () => import("react-globe.gl").then((mod) => mod.default),
+  () => import("./GlobeWrapper"),
   {
     ssr: false,
     loading: () => (
@@ -154,6 +154,7 @@ const POIs = [
 
 export default function LuxuryEarth() {
   const globeRef = useRef<any>(null);
+  const animFrameRef = useRef<number | null>(null);
 
   const [dimensions, setDimensions] = useState({
     width: 1200,
@@ -193,8 +194,17 @@ export default function LuxuryEarth() {
     return () => window.removeEventListener("resize", resize);
   }, []);
 
-  // GLOBE SETTINGS, LIGHTING, DAY/NIGHT CYCLE AND ATMOSPHERE
+  // Animation Cleanup
   useEffect(() => {
+    return () => {
+      if (animFrameRef.current !== null) {
+        cancelAnimationFrame(animFrameRef.current);
+      }
+    };
+  }, []);
+
+  // GLOBE SETTINGS, LIGHTING, DAY/NIGHT CYCLE AND ATMOSPHERE
+  const handleGlobeReady = () => {
     if (!globeRef.current) return;
 
     const globe = globeRef.current;
@@ -248,7 +258,6 @@ export default function LuxuryEarth() {
 
     // Animate Day/Night orbital Sun Light rotation
     let angle = 0;
-    let animFrame: number;
     
     const animateSun = () => {
       angle += 0.002; // Slow orbit rotation speed
@@ -256,7 +265,7 @@ export default function LuxuryEarth() {
         sunLight.position.x = 350 * Math.sin(angle);
         sunLight.position.z = 350 * Math.cos(angle);
       }
-      animFrame = requestAnimationFrame(animateSun);
+      animFrameRef.current = requestAnimationFrame(animateSun);
     };
     animateSun();
 
@@ -292,11 +301,7 @@ export default function LuxuryEarth() {
         rotateClouds();
       }
     );
-
-    return () => {
-      cancelAnimationFrame(animFrame);
-    };
-  }, []);
+  };
 
   // Fetch Weather Helper from Open-Meteo
   const fetchWeather = async (lat: number, lng: number) => {
@@ -413,6 +418,7 @@ export default function LuxuryEarth() {
       <div className="absolute inset-0 z-10">
         <Globe
           ref={globeRef}
+          onGlobeReady={handleGlobeReady}
           width={dimensions.width}
           height={dimensions.height}
           backgroundColor="rgba(0,0,0,0)"

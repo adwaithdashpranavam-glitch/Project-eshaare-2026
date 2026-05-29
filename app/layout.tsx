@@ -12,6 +12,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+import { TranslationProvider } from "@/lib/TranslationContext";
+
 export const metadata: Metadata = {
   title: "Eshaare Tour",
   description: "Tours & Events",
@@ -28,7 +30,9 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#f5f5f5]">
-        {children}
+        <TranslationProvider>
+          {children}
+        </TranslationProvider>
       </body>
     </html>
   );

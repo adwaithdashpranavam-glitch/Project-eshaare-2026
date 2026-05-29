@@ -1,12 +1,29 @@
+
 "use client";
+
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
-import { Menu, X, MapPin, Phone, ChevronDown, ChevronRight, ArrowLeft } from "lucide-react";
-import { onAuthStateChanged, signOut, User as FirebaseUser } from "firebase/auth";
+import {
+  Menu,
+  X,
+  MapPin,
+  Phone,
+  ChevronDown,
+  ChevronRight,
+  ArrowLeft,
+} from "lucide-react";
+
+import {
+  onAuthStateChanged,
+  signOut,
+  User as FirebaseUser,
+} from "firebase/auth";
+
 import { auth, db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
+import { useTranslation } from "@/lib/TranslationContext";
 
 const navData = [
   {
@@ -14,102 +31,233 @@ const navData = [
     subcategories: [
       {
         title: "Visa Services",
-        links: ["Schengen Visa", "UAE Visa", "UK Visa", "USA Visa", "Canada Visa", "Australia Visa", "Saudi Visa"]
+        links: [
+          "Schengen Visa",
+          "UAE Visa",
+          "UK Visa",
+          "USA Visa",
+          "Canada Visa",
+          "Australia Visa",
+          "Saudi Visa",
+        ],
       },
       {
         title: "Holiday Packages",
-        links: ["Europe Tours", "Maldives Packages", "Thailand Packages", "Bali Packages", "Turkey Packages", "Georgia Packages", "Japan Packages", "Honeymoon Packages", "Luxury Tours"]
+        links: [
+          "Europe Tours",
+          "Maldives Packages",
+          "Thailand Packages",
+          "Bali Packages",
+          "Turkey Packages",
+          "Georgia Packages",
+          "Japan Packages",
+          "Honeymoon Packages",
+          "Luxury Tours",
+        ],
       },
       {
         title: "Flights",
-        links: []
+        links: [],
       },
       {
         title: "Hotels",
-        links: [] // Removed sub-dropdown links to route directly to main hotels page
+        links: [],
       },
       {
         title: "Dubai Experiences",
-        links: ["Desert Safari", "Burj Khalifa", "Yacht Rental", "Ferrari World", "Marina Cruise", "Abu Dhabi Tours"]
+        links: [
+          "Desert Safari",
+          "Burj Khalifa",
+          "Yacht Rental",
+          "Ferrari World",
+          "Marina Cruise",
+          "Abu Dhabi Tours",
+        ],
       },
       {
         title: "Travel Insurance",
-        links: ["Apply Online", "Request Callback"]
-      }
-    ]
+        links: ["Apply Online", "Request Callback"],
+      },
+    ],
   },
   {
     title: "LABELS",
-    links: ["Home", "About Us", "Contact Us", "Why Choose Us", "Testimonials", "Partners", "Careers", "Gallery", "FAQ"]
+    links: [
+      "Home",
+      "About Us",
+      "Contact Us",
+      "Why Choose Us",
+      "Testimonials",
+      "Partners",
+      "Careers",
+      "Gallery",
+      "FAQ",
+    ],
   },
   {
     title: "NEWS",
-    links: ["Visa Updates", "Travel News", "Destination Guides", "Travel Tips", "UAE Updates", "Schengen News", "Blog"]
+    links: [
+      "Visa Updates",
+      "Travel News",
+      "Destination Guides",
+      "Travel Tips",
+      "UAE Updates",
+      "Schengen News",
+      "Blog",
+    ],
   },
   {
     title: "ONLINE SERVICES",
-    links: ["Appointment Booking", "WhatsApp Support", "Enquiry Form", "Live Chat", "Call Back Request", "Package Customization", "Flight Enquiry", "Hotel Enquiry", "Visa Consultation", "Start Your Journey"]
-  }
+    links: [
+      "Appointment Booking",
+      "WhatsApp Support",
+      "Enquiry Form",
+      "Live Chat",
+      "Call Back Request",
+      "Package Customization",
+      "Flight Enquiry",
+      "Hotel Enquiry",
+      "Visa Consultation",
+      "Start Your Journey",
+    ],
+  },
 ];
 
 const toSlug = (text: string) => {
   const t = text.trim();
-  if (t === "Home") return "/";
-  if (t === "About Us" || t === "Why Choose Us" || t === "Testimonials" || t === "Partners") return "/about";
-  if (t === "Contact Us" || t === "Call Back Request" || t === "Live Chat") return "/contact";
-  if (t === "Appointment Booking") return "/appointments";
-  if (t === "Enquiry Form" || t === "Enquire Now" || t === "Start Your Journey" || t === "Package Customization" || t === "Flight Enquiry" || t === "Hotel Enquiry") return "/#inquiry";
 
-  // TASK 3: Redirect ANY Visa service dropdown item to the main visa page /visa ONLY.
-  if (t === "Schengen Visa" || t === "UK Visa" || t === "USA Visa" || t === "Japan Visa" ||
-    t === "UAE Visa" || t === "Canada Visa" || t === "Australia Visa" || t === "Saudi Visa" ||
-    t === "Visa Services" || t === "Visa Consultation" || t.endsWith("Visa")) {
+  if (t === "Home") return "/";
+  if (
+    t === "About Us" ||
+    t === "Why Choose Us" ||
+    t === "Testimonials" ||
+    t === "Partners"
+  )
+    return "/about";
+
+  if (
+    t === "Contact Us" ||
+    t === "Call Back Request" ||
+    t === "Live Chat"
+  )
+    return "/contact";
+
+  if (t === "Appointment Booking") return "/appointments";
+
+  if (
+    t === "Enquiry Form" ||
+    t === "Enquire Now" ||
+    t === "Start Your Journey" ||
+    t === "Package Customization" ||
+    t === "Flight Enquiry" ||
+    t === "Hotel Enquiry"
+  )
+    return "/#inquiry";
+
+  if (
+    t === "Schengen Visa" ||
+    t === "UK Visa" ||
+    t === "USA Visa" ||
+    t === "Japan Visa" ||
+    t === "UAE Visa" ||
+    t === "Canada Visa" ||
+    t === "Australia Visa" ||
+    t === "Saudi Visa" ||
+    t === "Visa Services" ||
+    t === "Visa Consultation" ||
+    t.endsWith("Visa")
+  ) {
     return "/visa";
   }
 
-  // Specific Packages redirect to the main packages page (/packages)
-  if (t === "Holiday Packages" || t.endsWith("Packages") || t.endsWith("Tours") || t === "Japan Packages" || t === "Thailand Packages" || t === "Maldives Packages" || t === "Europe Tours") return "/packages";
+  if (
+    t === "Holiday Packages" ||
+    t.endsWith("Packages") ||
+    t.endsWith("Tours") ||
+    t === "Japan Packages" ||
+    t === "Thailand Packages" ||
+    t === "Maldives Packages" ||
+    t === "Europe Tours"
+  )
+    return "/packages";
 
-  // Flights
-  if (t.startsWith("Flight") || t === "Business Class" || t === "Multi-City Flights" || t === "Airport Transfers") return "/flights";
+  if (
+    t.startsWith("Flight") ||
+    t === "Business Class" ||
+    t === "Multi-City Flights" ||
+    t === "Airport Transfers"
+  )
+    return "/flights";
 
-  // Hotels
-  if (t.startsWith("Hotel") || t === "Luxury Hotels" || t === "Resorts" || t === "Villas" || t === "Family Resorts") return "/hotels";
+  if (
+    t.startsWith("Hotel") ||
+    t === "Luxury Hotels" ||
+    t === "Resorts" ||
+    t === "Villas" ||
+    t === "Family Resorts"
+  )
+    return "/hotels";
 
-  // Insurance
-  if (t === "Travel Insurance" || t === "Apply Online" || t === "Request Callback") return "/insurance";
+  if (
+    t === "Travel Insurance" ||
+    t === "Apply Online" ||
+    t === "Request Callback"
+  )
+    return "/insurance";
 
-  // Dubai Experiences Category Header
   if (t === "Dubai Experiences") return "/dubai";
 
-  // Dubai subcategories map to their individual package detail pages
-  if (t === "Desert Safari" || t === "Burj Khalifa" || t === "Yacht Rental" || t === "Ferrari World" || t === "Marina Cruise" || t === "Abu Dhabi Tours") {
-    return `/packages/${t.toLowerCase().replace(/ /g, '-')}`;
+  if (
+    t === "Desert Safari" ||
+    t === "Burj Khalifa" ||
+    t === "Yacht Rental" ||
+    t === "Ferrari World" ||
+    t === "Marina Cruise" ||
+    t === "Abu Dhabi Tours"
+  ) {
+    return `/packages/${t.toLowerCase().replace(/ /g, "-")}`;
   }
 
-  // WhatsApp Support
-  if (t === "WhatsApp Support") return "https://wa.me/971501234567?text=Hi ESHAARE, I need travel assistance.";
+  if (t === "WhatsApp Support") {
+    return "https://wa.me/971501234567?text=Hi ESHAARE, I need travel assistance.";
+  }
 
-  // News and blog subcategories map to /blog
-  if (t === "Visa Updates" || t === "Travel News" || t === "Destination Guides" || t === "Travel Tips" || t === "UAE Updates" || t === "Schengen News" || t === "Blog") return "/blog";
+  if (
+    t === "Visa Updates" ||
+    t === "Travel News" ||
+    t === "Destination Guides" ||
+    t === "Travel Tips" ||
+    t === "UAE Updates" ||
+    t === "Schengen News" ||
+    t === "Blog"
+  )
+    return "/blog";
 
-  // Corporate subsidiaries map to /about
-  if (t.startsWith("ESHAARE") || t === "Partner Network") return "/about";
+  if (t.startsWith("ESHAARE") || t === "Partner Network")
+    return "/about";
 
-  return `/${t.toLowerCase().replace(/ /g, '-')}`;
+  return `/${t.toLowerCase().replace(/ /g, "-")}`;
 };
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
+
+  const { language, setLanguage, t } = useTranslation();
+
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
-  const [mobileSubExpanded, setMobileSubExpanded] = useState<string | null>(null);
 
-  // Client authentication state
+  const [mobileExpanded, setMobileExpanded] = useState<string | null>(
+    null
+  );
+
+  const [mobileSubExpanded, setMobileSubExpanded] = useState<
+    string | null
+  >(null);
+
   const [user, setUser] = useState<FirebaseUser | null>(null);
-  const [userName, setUserName] = useState<string>("");
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -117,29 +265,43 @@ export default function Navbar() {
     };
 
     window.addEventListener("scroll", handleScroll);
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        setUserName(currentUser.displayName || currentUser.email?.split("@")[0] || "Guest");
-        try {
-          const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-          if (userDoc.exists()) {
-            const data = userDoc.data();
-            if (data?.name) {
-              setUserName(data.name);
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      async (currentUser) => {
+        setUser(currentUser);
+
+        if (currentUser) {
+          setUserName(
+            currentUser.displayName ||
+            currentUser.email?.split("@")[0] ||
+            "Guest"
+          );
+
+          try {
+            const userDoc = await getDoc(
+              doc(db, "users", currentUser.uid)
+            );
+
+            if (userDoc.exists()) {
+              const data = userDoc.data();
+
+              if (data?.name) {
+                setUserName(data.name);
+              }
             }
+          } catch (err) {
+            console.error("Error fetching user profile:", err);
           }
-        } catch (err) {
-          console.error("Error fetching user profile:", err);
+        } else {
+          setUserName("");
         }
-      } else {
-        setUserName("");
       }
-    });
+    );
 
     return () => unsubscribe();
   }, []);
@@ -170,51 +332,55 @@ export default function Navbar() {
         : "bg-white/90 backdrop-blur-xl shadow-md border-b border-gray-100"
         }`}
     >
-      {/* TASK 1: Show "Welcome, {name}" in the top area after login */}
+      {/* Welcome banner */}
       {user && (
         <div className="bg-gradient-to-r from-[#060e1a] via-[#0b1626] to-[#060e1a] text-gray-300 text-xs py-2 px-4 xl:px-8 flex items-center justify-between border-b border-amber-500/10 font-medium tracking-wide shadow-sm">
           <div className="flex items-center gap-1.5">
             <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-            <span>Welcome, <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e68932] to-amber-300 font-extrabold uppercase tracking-wider">{userName}</span></span>
+
+            <span>
+              {t("Welcome, ")}
+
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e68932] to-amber-300 font-extrabold uppercase tracking-wider">
+                {userName}
+              </span>
+            </span>
           </div>
-          {/* <div className="flex items-center gap-5">
-            <Link href="/dashboard" className="hover:text-[#e68932] text-[11px] uppercase tracking-wider font-bold transition duration-300 flex items-center gap-1">
-              <span className="w-1 h-1 rounded-full bg-white/20" />
-              Portal Dashboard
-            </Link>
-            <span className="text-white/10">|</span>
-            <button
-              onClick={handleSignOut}
-              className="hover:text-red-400 text-[11px] uppercase tracking-wider font-bold transition duration-300 cursor-pointer flex items-center gap-1 bg-transparent border-none"
-            >
-              Log Out
-            </button>
-          </div> */}
         </div>
       )}
 
       <div className="max-w-[95rem] mx-auto px-4 xl:px-6 h-20 flex items-center justify-between">
-        {/* Logo & Back Button Section */}
+        {/* Logo */}
         <div className="flex items-center gap-3">
-          {pathname && pathname !== "/" && pathname !== "/home" && (
-            <button
-              onClick={() => router.back()}
-              className="mr-1 flex items-center justify-center p-2 rounded-full hover:bg-gray-200/50 text-gray-800 transition-colors"
-              title="Go Back"
-            >
-              <ArrowLeft className="w-5 h-5 stroke-[2.5]" />
-            </button>
-          )}
-          <Link href="/" className="flex items-center gap-2 group shrink-0">
+          {pathname &&
+            pathname !== "/" &&
+            pathname !== "/home" && (
+              <button
+                onClick={() => router.back()}
+                className="mr-1 flex items-center justify-center p-2 rounded-full hover:bg-gray-200/50 text-gray-800 transition-colors"
+                title="Go Back"
+              >
+                <ArrowLeft className="w-5 h-5 stroke-[2.5]" />
+              </button>
+            )}
+
+          <Link
+            href="/"
+            className="flex items-center gap-2 group shrink-0"
+          >
             <div className="relative">
               <MapPin className="h-6 w-6 text-[#21201e]" />
+
               <div className="absolute -top-1 -right-2 w-2 h-2 bg-[#0c0c0b] rounded-full animate-pulse" />
             </div>
+
             <div>
               <h1 className="text-2xl font-bold tracking-tight">
                 <span className="text-[#e68932]">ESHAARE</span>
+
                 <span className="text-[#141312]">TOUR</span>
               </h1>
+
               <p className="text-[12px] tracking-wider text-gray-800 font-semibold -mt-1">
                 TOURS & EVENTS
               </p>
@@ -225,34 +391,56 @@ export default function Navbar() {
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-6 xl:gap-8 ml-8">
           {navData.map((navItem) => (
-            <div key={navItem.title} className="relative group/main py-8">
-              <button className="text-gray-800 group-hover/main:text-[#e68932] transition text-[13px] xl:text-sm font-semibold uppercase tracking-wide flex items-center gap-1">
-                {navItem.title} <ChevronDown className="w-3.5 h-3.5" />
+            <div
+              key={navItem.title}
+              className="relative group/main py-8"
+            >
+              <button className="text-gray-800 group-hover/main:text-[#e68932] transition text-[13px] xl:text-sm font-semibold uppercase tracking-wide flex items-center gap-1 cursor-pointer">
+                {t(navItem.title)}
+
+                <ChevronDown className="w-3.5 h-3.5" />
               </button>
 
-              {/* Dropdown Menu */}
+              {/* Dropdown */}
               <div className="absolute top-[70px] left-0 w-64 bg-white border border-gray-100 shadow-xl rounded-xl opacity-0 invisible group-hover/main:opacity-100 group-hover/main:visible transition-all duration-300 py-2">
                 {navItem.subcategories ? (
                   navItem.subcategories.map((sub) => (
-                    <div key={sub.title} className="relative group/sub">
+                    <div
+                      key={sub.title}
+                      className="relative group/sub"
+                    >
                       {sub.links && sub.links.length > 0 ? (
                         <>
-                          <Link href={toSlug(sub.title)} prefetch={false} className="px-5 py-3 hover:bg-orange-50/50 hover:text-[#e68932] flex items-center justify-between text-sm font-medium text-gray-700 cursor-pointer transition-colors">
-                            {sub.title} <ChevronRight className="w-4 h-4 text-gray-400 group-hover/sub:text-[#e68932]" />
+                          <Link
+                            href={toSlug(sub.title)}
+                            prefetch={false}
+                            className="px-5 py-3 hover:bg-orange-50/50 hover:text-[#e68932] flex items-center justify-between text-sm font-medium text-gray-700 transition-colors"
+                          >
+                            {t(sub.title)}
+
+                            <ChevronRight className="w-4 h-4 text-gray-400 group-hover/sub:text-[#e68932]" />
                           </Link>
 
-                          {/* Subcategory Dropdown */}
                           <div className="absolute top-0 left-full -ml-1 w-60 bg-white border border-gray-100 shadow-xl rounded-xl opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-300 py-2">
                             {sub.links.map((link) => (
-                              <Link key={link} href={toSlug(link)} prefetch={false} className="block px-5 py-2.5 hover:bg-orange-50/50 hover:text-[#e68932] text-sm text-gray-600 transition-colors">
-                                {link}
+                              <Link
+                                key={link}
+                                href={toSlug(link)}
+                                prefetch={false}
+                                className="block px-5 py-2.5 hover:bg-orange-50/50 hover:text-[#e68932] text-sm text-gray-600 transition-colors"
+                              >
+                                {t(link)}
                               </Link>
                             ))}
                           </div>
                         </>
                       ) : (
-                        <Link href={toSlug(sub.title)} prefetch={false} className="block px-5 py-3 hover:bg-orange-50/50 hover:text-[#e68932] text-sm font-medium text-gray-700 transition-colors">
-                          {sub.title}
+                        <Link
+                          href={toSlug(sub.title)}
+                          prefetch={false}
+                          className="block px-5 py-3 hover:bg-orange-50/50 hover:text-[#e68932] text-sm font-medium text-gray-700 transition-colors"
+                        >
+                          {t(sub.title)}
                         </Link>
                       )}
                     </div>
@@ -260,19 +448,15 @@ export default function Navbar() {
                 ) : (
                   <>
                     {navItem.links?.map((link) => (
-                      <Link key={link} href={toSlug(link)} prefetch={false} className="block px-5 py-2.5 hover:bg-orange-50/50 hover:text-[#e68932] text-sm font-medium text-gray-700 transition-colors">
-                        {link}
+                      <Link
+                        key={link}
+                        href={toSlug(link)}
+                        prefetch={false}
+                        className="block px-5 py-2.5 hover:bg-orange-50/50 hover:text-[#e68932] text-sm font-medium text-gray-700 transition-colors"
+                      >
+                        {t(link)}
                       </Link>
                     ))}
-                    {navItem.title === "ONLINE SERVICES" && (
-                      <Link href="/admin" prefetch={false} className="flex items-center justify-end px-5 py-2 text-gray-300 hover:text-[#e68932] opacity-30 hover:opacity-100 transition-all border-t border-gray-50/50 mt-1" title="Admin Portal">
-                        <span className="text-[10px] uppercase font-bold tracking-widest mr-1.5">Portal</span>
-                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                        </svg>
-                      </Link>
-                    )}
                   </>
                 )}
               </div>
@@ -281,28 +465,42 @@ export default function Navbar() {
         </nav>
 
         {/* Desktop Buttons */}
-        <div className="hidden lg:flex items-center gap-4 shrink-0">
-          {/* TASK 1: Add a new button named "Login" beside "Enquire Now" button. Redirect to dashboard if logged in. */}
+        <div className="hidden lg:flex items-center gap-3 xl:gap-4 shrink-0">
+          {/* AR Button */}
+          {/* <button
+            onClick={() =>
+              setLanguage(language === "en" ? "ar" : "en")
+            }
+            className="h-10 w-10 rounded-full bg-[#e68932] text-white font-bold text-xs flex items-center justify-center shadow-md hover:bg-[#cf7726] transition-all duration-300"
+          >
+            AR
+          </button> */}
+
           {!user ? (
             <Link
               href="/login"
               className="h-11 border border-[#e68932] hover:bg-[#e68932]/10 text-gray-800 px-6 rounded-full font-semibold text-sm flex items-center justify-center transition-all duration-300"
             >
-              Login
+              {t("Login")}
             </Link>
           ) : (
             <Link
               href="/dashboard"
               className="h-11 border border-gray-300 hover:bg-gray-100 text-gray-800 px-6 rounded-full font-semibold text-sm flex items-center justify-center transition-all duration-300"
             >
-              Dashboard
+              {t("Dashboard")}
             </Link>
           )}
 
-          <Link href="/#inquiry" className="group relative flex items-center gap-2 h-11 bg-[#e68932] border border-[#e68932] text-white px-5 rounded-full font-semibold text-sm hover:bg-[#cf7726] transition-all duration-300 overflow-hidden shadow-md">
+          <Link
+            href="/#inquiry"
+            className="group relative flex items-center gap-2 h-11 bg-[#e68932] border border-[#e68932] text-white px-5 rounded-full font-semibold text-sm hover:bg-[#cf7726] transition-all duration-300 overflow-hidden shadow-md"
+          >
             <Phone className="h-4 w-4" />
-            <span>Enquire Now</span>
+
+            <span>{t("Enquire Now")}</span>
           </Link>
+
           <Image
             src="/images/logo.png"
             alt="ESHAARE Logo"
@@ -312,13 +510,30 @@ export default function Navbar() {
           />
         </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setOpen(!open)}
-          className="lg:hidden text-gray-700 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        {/* Mobile Buttons */}
+        <div className="lg:hidden flex items-center gap-2">
+          {/* AR Button */}
+          <button
+            onClick={() =>
+              setLanguage(language === "en" ? "ar" : "en")
+            }
+            className="h-10 w-10 rounded-full bg-[#e68932] text-white font-bold text-xs flex items-center justify-center shadow-md hover:bg-[#cf7726] transition-all duration-300"
+          >
+            AR
+          </button>
+
+          {/* Menu */}
+          <button
+            onClick={() => setOpen(!open)}
+            className="text-gray-700 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+          >
+            {open ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
@@ -326,43 +541,85 @@ export default function Navbar() {
         <div className="lg:hidden border-t border-gray-100 bg-white max-h-[calc(100vh-80px)] overflow-y-auto shadow-xl">
           <div className="flex flex-col p-4">
             {navData.map((navItem) => (
-              <div key={navItem.title} className="border-b border-gray-50 last:border-0">
+              <div
+                key={navItem.title}
+                className="border-b border-gray-50 last:border-0"
+              >
                 <button
-                  onClick={() => toggleMobileNav(navItem.title)}
+                  onClick={() =>
+                    toggleMobileNav(navItem.title)
+                  }
                   className="w-full py-4 flex items-center justify-between text-sm font-bold text-gray-800"
                 >
-                  {navItem.title}
-                  <ChevronDown className={`w-4 h-4 transition-transform ${mobileExpanded === navItem.title ? 'rotate-180' : ''}`} />
+                  {t(navItem.title)}
+
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform ${mobileExpanded === navItem.title
+                      ? "rotate-180"
+                      : ""
+                      }`}
+                  />
                 </button>
 
                 {mobileExpanded === navItem.title && (
-                  <div className="pb-3 pl-4">
+                  <div className="pb-3 pl-4 pr-4">
                     {navItem.subcategories ? (
                       navItem.subcategories.map((sub) => (
                         <div key={sub.title} className="mt-1">
-                          {sub.links && sub.links.length > 0 ? (
+                          {sub.links &&
+                            sub.links.length > 0 ? (
                             <>
                               <button
-                                onClick={() => setMobileSubExpanded(mobileSubExpanded === sub.title ? null : sub.title)}
+                                onClick={() =>
+                                  setMobileSubExpanded(
+                                    mobileSubExpanded ===
+                                      sub.title
+                                      ? null
+                                      : sub.title
+                                  )
+                                }
                                 className="w-full py-2.5 flex items-center justify-between text-sm font-semibold text-gray-700"
                               >
-                                {sub.title}
-                                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${mobileSubExpanded === sub.title ? 'rotate-180' : ''}`} />
+                                {t(sub.title)}
+
+                                <ChevronDown
+                                  className={`w-3.5 h-3.5 transition-transform ${mobileSubExpanded ===
+                                    sub.title
+                                    ? "rotate-180"
+                                    : ""
+                                    }`}
+                                />
                               </button>
 
-                              {mobileSubExpanded === sub.title && (
-                                <div className="pl-4 py-1 flex flex-col gap-1 border-l-2 border-gray-100 ml-2">
-                                  {sub.links.map((link) => (
-                                    <Link key={link} href={toSlug(link)} prefetch={false} onClick={() => setOpen(false)} className="py-2 text-[13px] text-gray-600">
-                                      {link}
-                                    </Link>
-                                  ))}
-                                </div>
-                              )}
+                              {mobileSubExpanded ===
+                                sub.title && (
+                                  <div className="pl-4 pr-4 py-1 flex flex-col gap-1 border-l-2 border-gray-100 ml-2 mr-2">
+                                    {sub.links.map((link) => (
+                                      <Link
+                                        key={link}
+                                        href={toSlug(link)}
+                                        prefetch={false}
+                                        onClick={() =>
+                                          setOpen(false)
+                                        }
+                                        className="py-2 text-[13px] text-gray-600 block"
+                                      >
+                                        {t(link)}
+                                      </Link>
+                                    ))}
+                                  </div>
+                                )}
                             </>
                           ) : (
-                            <Link href={toSlug(sub.title)} prefetch={false} onClick={() => setOpen(false)} className="block py-2.5 text-sm font-semibold text-gray-700">
-                              {sub.title}
+                            <Link
+                              href={toSlug(sub.title)}
+                              prefetch={false}
+                              onClick={() =>
+                                setOpen(false)
+                              }
+                              className="block py-2.5 text-sm font-semibold text-gray-700"
+                            >
+                              {t(sub.title)}
                             </Link>
                           )}
                         </div>
@@ -370,19 +627,18 @@ export default function Navbar() {
                     ) : (
                       <div className="flex flex-col gap-1">
                         {navItem.links?.map((link) => (
-                          <Link key={link} href={toSlug(link)} prefetch={false} onClick={() => setOpen(false)} className="py-2.5 text-[13px] font-medium text-gray-600">
-                            {link}
+                          <Link
+                            key={link}
+                            href={toSlug(link)}
+                            prefetch={false}
+                            onClick={() =>
+                              setOpen(false)
+                            }
+                            className="py-2.5 text-[13px] font-medium text-gray-600"
+                          >
+                            {t(link)}
                           </Link>
                         ))}
-                        {navItem.title === "ONLINE SERVICES" && (
-                          <Link href="/admin" prefetch={false} onClick={() => setOpen(false)} className="flex items-center gap-1.5 py-2.5 text-[11px] font-bold text-gray-300 hover:text-[#e68932] opacity-40 transition-all mt-1 border-t border-gray-100">
-                            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
-                            <span>ADMIN PORTAL</span>
-                          </Link>
-                        )}
                       </div>
                     )}
                   </div>
@@ -390,21 +646,32 @@ export default function Navbar() {
               </div>
             ))}
 
+            {/* Mobile CTA */}
             <div className="mt-6 flex flex-col gap-3">
               {!user ? (
-                <Link href="/login" className="border border-[#e68932] text-gray-800 py-3 rounded-full text-center font-semibold text-sm"
-                  onClick={() => setOpen(false)}>
-                  Login / Register
+                <Link
+                  href="/login"
+                  className="border border-[#e68932] text-gray-800 py-3 rounded-full text-center font-semibold text-sm"
+                  onClick={() => setOpen(false)}
+                >
+                  {t("Login")}
                 </Link>
               ) : (
-                <Link href="/dashboard" className="border border-gray-300 text-gray-800 py-3 rounded-full text-center font-semibold text-sm"
-                  onClick={() => setOpen(false)}>
-                  Client Dashboard
+                <Link
+                  href="/dashboard"
+                  className="border border-gray-300 text-gray-800 py-3 rounded-full text-center font-semibold text-sm"
+                  onClick={() => setOpen(false)}
+                >
+                  {t("Dashboard")}
                 </Link>
               )}
-              <Link href="/#inquiry" className="bg-[#e68932] text-white py-3 rounded-full text-center font-semibold text-sm shadow-md"
-                onClick={() => setOpen(false)}>
-                Enquire Now
+
+              <Link
+                href="/#inquiry"
+                className="bg-[#e68932] text-white py-3 rounded-full text-center font-semibold text-sm shadow-md"
+                onClick={() => setOpen(false)}
+              >
+                {t("Enquire Now")}
               </Link>
             </div>
           </div>
