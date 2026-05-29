@@ -113,6 +113,9 @@ export default function HotelsPage() {
   const [activeHotel, setActiveHotel] = useState<Hotel | null>(null);
   const [callbackName, setCallbackName] = useState("");
   const [callbackPhone, setCallbackPhone] = useState("");
+  const [numRooms, setNumRooms] = useState<number>(1);
+  const [extraBed, setExtraBed] = useState<boolean>(false);
+  const [mealType, setMealType] = useState<string>("EP");
   const [callbackLoading, setCallbackLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -172,14 +175,20 @@ export default function HotelsPage() {
         serviceType: "Hotel Booking",
         date: dateFrom && dateTo ? `${dateFrom} to ${dateTo}` : "",
         time: "Anytime",
-        details: `Callback Inquiry for Hotel: ${activeHotel.name} (${activeHotel.hotelType}). Location: ${activeHotel.location}. Check-in: ${dateFrom || "Not Set"}, Check-out: ${dateTo || "Not Set"}. Guests: ${adultsCount} Adults.`,
+        details: `Callback Inquiry for Hotel: ${activeHotel.name} (${activeHotel.hotelType}). Location: ${activeHotel.location}. Check-in: ${dateFrom || "Not Set"}, Check-out: ${dateTo || "Not Set"}. Guests: ${adultsCount} Adults. Rooms: ${numRooms}. Extra Bed: ${extraBed ? "Yes" : "No"}. Meal Type: ${mealType}.`,
         status: "pending",
+        numRooms: numRooms,
+        extraBed: extraBed,
+        mealType: mealType,
         createdAt: serverTimestamp(),
       });
 
       setSubmitted(true);
       setCallbackName("");
       setCallbackPhone("");
+      setNumRooms(1);
+      setExtraBed(false);
+      setMealType("EP");
     } catch (err) {
       console.error(err);
       alert("An error occurred. Please try again.");
@@ -648,6 +657,54 @@ export default function HotelsPage() {
                       onChange={(e) => setCallbackPhone(e.target.value)}
                       className="w-full h-11 rounded-xl bg-[#071120] border border-white/10 px-4 text-white outline-none focus:border-[#00C2FF] focus:bg-white/5 transition text-sm"
                     />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">
+                        No. of Rooms
+                      </label>
+                      <select
+                        value={numRooms}
+                        onChange={(e) => setNumRooms(Number(e.target.value))}
+                        className="w-full h-11 rounded-xl bg-[#071120] border border-white/10 px-4 text-white outline-none focus:border-[#00C2FF] focus:bg-white/5 transition text-sm cursor-pointer"
+                      >
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                          <option key={n} value={n} className="bg-[#071120] text-white">
+                            {n} {n === 1 ? "Room" : "Rooms"}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">
+                        Meal Type
+                      </label>
+                      <select
+                        value={mealType}
+                        onChange={(e) => setMealType(e.target.value)}
+                        className="w-full h-11 rounded-xl bg-[#071120] border border-white/10 px-4 text-white outline-none focus:border-[#00C2FF] focus:bg-white/5 transition text-sm cursor-pointer"
+                      >
+                        <option value="EP" className="bg-[#071120] text-white">EP (European Plan)</option>
+                        <option value="CP" className="bg-[#071120] text-white">CAP / CP (Continental Plan)</option>
+                        <option value="MAP" className="bg-[#071120] text-white">MAP (Modified American Plan)</option>
+                        <option value="AP" className="bg-[#071120] text-white">AP (American Plan)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 py-1 select-none">
+                    <input
+                      type="checkbox"
+                      id="extraBedCheckbox"
+                      checked={extraBed}
+                      onChange={(e) => setExtraBed(e.target.checked)}
+                      className="w-4 h-4 rounded border-white/10 text-[#00C2FF] bg-[#071120] focus:ring-[#00C2FF] cursor-pointer"
+                    />
+                    <label htmlFor="extraBedCheckbox" className="text-xs font-medium text-gray-300 cursor-pointer">
+                      Require Extra Bed?
+                    </label>
                   </div>
 
                   {dateFrom && dateTo && (

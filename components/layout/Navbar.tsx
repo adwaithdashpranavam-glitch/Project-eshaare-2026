@@ -66,12 +66,11 @@ const navData = [
       {
         title: "Dubai Experiences",
         links: [
-          "Desert Safari",
           "Burj Khalifa",
-          "Yacht Rental",
-          "Ferrari World",
-          "Marina Cruise",
-          "Abu Dhabi Tours",
+          "Palm Jumeirah",
+          "Dubai Frame",
+          "Burj Al Arab",
+          "Museum of the Future",
         ],
       },
       {
@@ -119,6 +118,7 @@ const navData = [
       "Hotel Enquiry",
       "Visa Consultation",
       "Start Your Journey",
+      "Admin Portal",
     ],
   },
 ];
@@ -208,8 +208,17 @@ const toSlug = (text: string) => {
   if (t === "Dubai Experiences") return "/dubai";
 
   if (
-    t === "Desert Safari" ||
     t === "Burj Khalifa" ||
+    t === "Palm Jumeirah" ||
+    t === "Dubai Frame" ||
+    t === "Burj Al Arab" ||
+    t === "Museum of the Future"
+  ) {
+    return "/dubai#attractions";
+  }
+
+  if (
+    t === "Desert Safari" ||
     t === "Yacht Rental" ||
     t === "Ferrari World" ||
     t === "Marina Cruise" ||
@@ -220,6 +229,10 @@ const toSlug = (text: string) => {
 
   if (t === "WhatsApp Support") {
     return "https://wa.me/971501234567?text=Hi ESHAARE, I need travel assistance.";
+  }
+
+  if (t === "Admin Portal") {
+    return "/admin";
   }
 
   if (

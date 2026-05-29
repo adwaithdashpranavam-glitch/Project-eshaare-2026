@@ -29,6 +29,7 @@ const translations: Record<Language, Record<string, string>> = {
     "Enquire Now": "Enquire Now",
     "Search...": "Search for destinations, visas, or tours...",
     "Search destinations, visas, tours...": "Search destinations, visas, tours...",
+    "Admin Portal": "Admin Portal",
     
     // Hero & Generic Sections
     "Explore seamless visa processing for global destinations": "Explore seamless visa processing for global destinations",
@@ -106,6 +107,7 @@ const translations: Record<Language, Record<string, string>> = {
     "Enquire Now": "استفسر الآن",
     "Search...": "ابحث عن الوجهات، التأشيرات، أو الجولات...",
     "Search destinations, visas, tours...": "ابحث عن الوجهات، التأشيرات، الجولات...",
+    "Admin Portal": "بوابة الإدارة",
     
     // Hero & Generic Sections
     "Explore seamless visa processing for global destinations": "استكشف خدمات استخراج التأشيرات السلسة لمختلف الوجهات العالمية",
